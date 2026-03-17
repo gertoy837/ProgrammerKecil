@@ -1,0 +1,52 @@
+# ==================
+# Node.js / Express
+# ==================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+logs/
+*.log
+
+# env / secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# build output (kalau suatu saat pakai TS/Babel)
+dist/
+build/
+out/
+
+# test / coverage
+coverage/
+.nyc_output/
+
+# caches
+.cache/
+
+# ==================
+# Prisma
+# ==================
+# Prisma (SQLite) local dev DB files (kalau kamu pakai sqlite)
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db
+prisma/*.db-journal
+prisma/*.sqlite
+prisma/*.sqlite3
+
+# (opsional) generated artifacts (biasanya tidak perlu, tapi aman kalau ada)
+prisma/.cache/
+
+# ==================
+# OS / Editor
+# ==================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
