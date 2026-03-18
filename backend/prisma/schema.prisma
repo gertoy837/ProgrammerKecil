@@ -23,3 +23,24 @@ model User {
   reviews Review[]
   orders  Order[]
 }
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  products  Product[]
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  price       Int
+  stock       Int
+  description String
+  image       String?
+  categoryId  Int
+
+  category    Category  @relation(fields: [categoryId], references: [id])
+  cartItems   CartItem[]
+  reviews     Review[]
+  orderItems  OrderItem[]
+}
