@@ -9,3 +9,7 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   res.json({ message: "Get product detail ready" });
 };
+
+exports.addReview = async (req, res) => {
+  res.json({ message: "Review endpoint ready" });
+};

@@ -1,14 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -18,10 +14,11 @@ model User {
   password  String
   role      String   @default("user")
   createdAt DateTime @default(now())
-
-  carts   Cart[]
-  reviews Review[]
-  orders  Order[]
+  
+  // Relasi balik yang diperlukan Prisma
+  carts     Cart[]
+  orders    Order[]
+  reviews   Review[]
 }
 
 model Category {
@@ -31,7 +28,7 @@ model Category {
 }
 
 model Product {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   price       Int
   stock       Int
