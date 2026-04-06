@@ -1,37 +1,15 @@
 const { PrismaClient } = require("@prisma/client");
+
 const prisma = new PrismaClient();
 
-// ✅ ambil semua product + category
 exports.getAllProducts = async (req, res) => {
-  try {
-    const products = await prisma.product.findMany({
-      include: {
-        category: true
-      }
-    });
-
-    res.json(products);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error ambil product" });
-  }
+  res.json({ message: "Get all products ready" });
 };
 
-// ✅ ambil product by id + category
 exports.getProductById = async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
+  res.json({ message: "Get product detail ready" });
+};
 
-    const product = await prisma.product.findUnique({
-      where: { id },
-      include: {
-        category: true
-      }
-    });
-
-    res.json(product);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error ambil product by id" });
-  }
+exports.addReview = async (req, res) => {
+  res.json({ message: "Review endpoint ready" });
 };
