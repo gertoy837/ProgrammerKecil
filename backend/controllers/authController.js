@@ -1,9 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-// const prisma = new PrismaClient();
-
-const prisma = new PrismaClient({
-  errorFormat: 'minimal',
-});
+const prisma = require("../lib/prisma");
 
 exports.register = async (req, res) => {
     res.json({ message: 'Register endpoint ready' });

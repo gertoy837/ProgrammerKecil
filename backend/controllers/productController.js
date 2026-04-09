@@ -1,6 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+const prisma = require("../lib/prisma");
 
 exports.getAllProducts = async (req, res) => {
   res.json({ message: "Get all products ready" });
