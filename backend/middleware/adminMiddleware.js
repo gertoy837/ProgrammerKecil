@@ -1,4 +1,4 @@
- module.exports = (req, res, next) => {
+module.exports = (req, res, next) => {
 
   const user = req.user;
 
