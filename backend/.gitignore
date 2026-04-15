@@ -29,20 +29,6 @@ coverage/
 .cache/
 
 # ==================
-# Prisma
-# ==================
-# Prisma (SQLite) local dev DB files (kalau kamu pakai sqlite)
-prisma/dev.db
-prisma/dev.db-journal
-prisma/*.db
-prisma/*.db-journal
-prisma/*.sqlite
-prisma/*.sqlite3
-
-# (opsional) generated artifacts (biasanya tidak perlu, tapi aman kalau ada)
-prisma/.cache/
-
-# ==================
 # OS / Editor
 # ==================
 .DS_Store

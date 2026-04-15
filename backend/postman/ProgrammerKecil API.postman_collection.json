@@ -1,0 +1,242 @@
+{
+  "info": {
+    "_postman_id": "f2b6e5ec-9f03-45b4-b4cd-1a6599b1f9b2",
+    "name": "ProgrammerKecil API",
+    "description": "Collection untuk testing backend ProgrammerKecil (auth, admin, products, cart).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Budi\",\n  \"email\": \"budi@example.com\",\n  \"password\": \"123456\",\n  \"role\": \"user\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "register"
+          ]
+        },
+        "description": "Register user biasa. Role opsional: user/admin."
+      }
+    },
+    {
+      "name": "Auth - Login Admin (Default Seed)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "var json = pm.response.json();",
+              "if (json.token) pm.environment.set('token', json.token);",
+              "if (json.user && json.user.id) pm.environment.set('user_id', String(json.user.id));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "login"
+          ]
+        },
+        "description": "Login admin default. Test script otomatis simpan token ke environment variable: token."
+      }
+    },
+    {
+      "name": "Auth - Me",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "me"
+          ]
+        },
+        "description": "Cek user dari token JWT."
+      }
+    },
+    {
+      "name": "Admin - Me",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/admin/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "admin",
+            "me"
+          ]
+        },
+        "description": "Endpoint khusus admin. Akan 403 jika token user non-admin."
+      }
+    },
+    {
+      "name": "Products - Get All",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Products - Get By Id",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products",
+            "{{product_id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Products - Add Review",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": {{user_id}},\n  \"review\": \"Barang bagus dan pengiriman cepat\",\n  \"rating\": 5\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}/reviews",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products",
+            "{{product_id}}",
+            "reviews"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cart - Add To Cart",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": {{user_id}},\n  \"productId\": {{product_id}},\n  \"quantity\": 1\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/cart",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "cart"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cart - Get Cart By User",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/cart/{{user_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "cart",
+            "{{user_id}}"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": "1"
+    },
+    {
+      "key": "product_id",
+      "value": "1"
+    }
+  ]
+}
