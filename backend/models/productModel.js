@@ -55,7 +55,7 @@ async function listProducts() {
        (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
        (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
      FROM product p
-     LEFT JOIN categories c ON c.id = p.categoryId
+     LEFT JOIN category c ON c.id = p.categoryId
      ORDER BY p.id ASC`
   );
 
@@ -84,7 +84,7 @@ async function getProductById(productId) {
        (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
        (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
      FROM product p
-     LEFT JOIN categories c ON c.id = p.categoryId
+     LEFT JOIN category c ON c.id = p.categoryId
      WHERE p.id = ?
      LIMIT 1`,
     [productId]
@@ -145,9 +145,67 @@ async function addReview({ productId, userId, review, rating }) {
   };
 }
 
+async function createProduct(data) {
+  await ensureDatabaseReady();
+  const pool = getPool();
+
+  const [result] = await pool.query(
+    `INSERT INTO product (name, price, stock, description, image, categoryId)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [
+      data.name,
+      data.price,
+      data.stock,
+      data.description,
+      data.image,
+      data.categoryId,
+    ]
+  );
+
+  return result.insertId;
+}
+
+async function updateProduct(id, data) {
+  await ensureDatabaseReady();
+  const pool = getPool();
+
+  const [result] = await pool.query(
+    `UPDATE product 
+     SET name=?, price=?, stock=?, description=?, image=?, categoryId=? 
+     WHERE id=?`,
+    [
+      data.name,
+      data.price,
+      data.stock,
+      data.description,
+      data.image,
+      data.categoryId,
+      id
+    ]
+  );
+
+  return result.affectedRows > 0;
+}
+
+async function deleteProduct(id) {
+  await ensureDatabaseReady();
+  const pool = getPool();
+
+  const [result] = await pool.query(
+    "DELETE FROM product WHERE id=?",
+    [id]
+  );
+
+  return result.affectedRows > 0;
+}
+
+
 module.exports = {
   addReview,
   getProductById,
   listProducts,
   mapProductRow,
+  createProduct,
+  updateProduct,
+  deleteProduct
 };
