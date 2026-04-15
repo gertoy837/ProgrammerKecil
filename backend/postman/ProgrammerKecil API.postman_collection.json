@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "f2b6e5ec-9f03-45b4-b4cd-1a6599b1f9b2",
     "name": "ProgrammerKecil API",
-    "description": "Collection untuk testing backend ProgrammerKecil (auth, admin, products, cart).",
+    "description": "Collection untuk testing backend ProgrammerKecil (auth, admin, products, cart) sesuai route terbaru.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -21,11 +21,12 @@
           "raw": "{\n  \"name\": \"Budi\",\n  \"email\": \"budi@example.com\",\n  \"password\": \"123456\",\n  \"role\": \"user\"\n}"
         },
         "url": {
-          "raw": "{{base_url}}/register",
+          "raw": "{{base_url}}/auth/register",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "auth",
             "register"
           ]
         },
@@ -64,11 +65,12 @@
           "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}"
         },
         "url": {
-          "raw": "{{base_url}}/login",
+          "raw": "{{base_url}}/auth/login",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "auth",
             "login"
           ]
         },
@@ -86,16 +88,17 @@
           }
         ],
         "url": {
-          "raw": "{{base_url}}/auth/me",
+          "raw": "{{base_url}}/auth/auth/me",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "auth",
+            "auth",
             "me"
           ]
         },
-        "description": "Cek user dari token JWT."
+        "description": "Cek user dari token JWT. Path mengikuti route saat ini: /api/auth/auth/me."
       }
     },
     {
@@ -109,16 +112,43 @@
           }
         ],
         "url": {
-          "raw": "{{base_url}}/admin/me",
+          "raw": "{{base_url}}/admin/admin/me",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "admin",
+            "admin",
             "me"
           ]
         },
-        "description": "Endpoint khusus admin. Akan 403 jika token user non-admin."
+        "description": "Endpoint khusus admin. Akan 403 jika token user non-admin. Path mengikuti route saat ini: /api/admin/admin/me."
+      }
+    },
+    {
+      "name": "Products - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Mouse Wireless\",\n  \"price\": 150000,\n  \"stock\": 10,\n  \"description\": \"Mouse wireless ergonomis\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        },
+        "description": "Buat produk baru (sesuai POST /api/products)."
       }
     },
     {
@@ -150,6 +180,50 @@
             "{{product_id}}"
           ]
         }
+      }
+    },
+    {
+      "name": "Products - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Mouse Wireless Pro\",\n  \"price\": 175000,\n  \"stock\": 8\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products",
+            "{{product_id}}"
+          ]
+        },
+        "description": "Update produk berdasarkan id (sesuai PUT /api/products/:id)."
+      }
+    },
+    {
+      "name": "Products - Delete",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products",
+            "{{product_id}}"
+          ]
+        },
+        "description": "Hapus produk berdasarkan id (sesuai DELETE /api/products/:id)."
       }
     },
     {
@@ -194,11 +268,12 @@
           "raw": "{\n  \"userId\": {{user_id}},\n  \"productId\": {{product_id}},\n  \"quantity\": 1\n}"
         },
         "url": {
-          "raw": "{{base_url}}/cart",
+          "raw": "{{base_url}}/cart/cart",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "cart",
             "cart"
           ]
         }
@@ -209,11 +284,12 @@
       "request": {
         "method": "GET",
         "url": {
-          "raw": "{{base_url}}/cart/{{user_id}}",
+          "raw": "{{base_url}}/cart/cart/{{user_id}}",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "cart",
             "cart",
             "{{user_id}}"
           ]
