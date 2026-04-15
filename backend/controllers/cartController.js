@@ -1,4 +1,4 @@
-const dataStore = require("../lib/dataStore");
+const dataStore = require("../models/dataStore");
 
 exports.addToCart = async (req, res) => {
   const result = await dataStore.addToCart(req.body);

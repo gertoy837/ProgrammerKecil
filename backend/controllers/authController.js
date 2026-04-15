@@ -1,4 +1,5 @@
-const dataStore = require("../lib/dataStore");
+const dataStore = require("../models/dataStore");
+const { createAccessToken } = require("../lib/authToken");
 
 exports.register = async (req, res) => {
     const result = await dataStore.registerUser(req.body);
@@ -7,7 +8,10 @@ exports.register = async (req, res) => {
         return res.status(result.statusCode || 400).json({ message: result.error });
     }
 
-    res.status(201).json(result);
+    res.status(201).json({
+        user: result.user,
+        token: createAccessToken(result.user),
+    });
 };
 
 exports.login = async (req, res) => {
@@ -17,5 +21,12 @@ exports.login = async (req, res) => {
         return res.status(result.statusCode || 400).json({ message: result.error });
     }
 
-    res.json(result);
+    res.json({
+        user: result.user,
+        token: createAccessToken(result.user),
+    });
+};
+
+exports.me = async (req, res) => {
+    res.json({ user: req.user });
 };
