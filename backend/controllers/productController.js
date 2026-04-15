@@ -41,3 +41,43 @@ exports.addReview = async (req, res) => {
 
   res.status(201).json({ review: result.review, product: result.product });
 };
+
+// CREATE PRODUCT
+exports.createProduct = async (req, res) => {
+  try {
+    const id = await dataStore.createProduct(req.body);
+
+    res.status(201).json({
+      message: "Produk berhasil dibuat",
+      productId: id
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// UPDATE PRODUCT
+exports.updateProduct = async (req, res) => {
+  const id = Number(req.params.id);
+
+  const success = await dataStore.updateProduct(id, req.body);
+
+  if (!success) {
+    return res.status(404).json({ message: "Produk tidak ditemukan" });
+  }
+
+  res.json({ message: "Produk berhasil diupdate" });
+};
+
+// DELETE PRODUCT
+exports.deleteProduct = async (req, res) => {
+  const id = Number(req.params.id);
+
+  const success = await dataStore.deleteProduct(id);
+
+  if (!success) {
+    return res.status(404).json({ message: "Produk tidak ditemukan" });
+  }
+
+  res.json({ message: "Produk berhasil dihapus" });
+};
