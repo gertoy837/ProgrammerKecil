@@ -54,7 +54,7 @@ async function listProducts() {
        c.name AS categoryName,
        (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
        (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
-     FROM products p
+     FROM product p
      LEFT JOIN categories c ON c.id = p.categoryId
      ORDER BY p.id ASC`
   );
@@ -83,7 +83,7 @@ async function getProductById(productId) {
        c.name AS categoryName,
        (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
        (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
-     FROM products p
+     FROM product p
      LEFT JOIN categories c ON c.id = p.categoryId
      WHERE p.id = ?
      LIMIT 1`,
