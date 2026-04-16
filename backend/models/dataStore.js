@@ -11,8 +11,16 @@ const {
   deleteProduct
 } = require("./productModel");
 
+const {
+  listCategories,
+  getCategoryById,
+  createCategory,
+  updateCategory,
+  deleteCategory
+} = require("./categoryModel");
+
 module.exports = {
-  addReview,
+  addReview,  
   addToCart,
   authenticateUser,
   ensureDatabaseReady,
@@ -23,5 +31,10 @@ module.exports = {
   toPublicUser,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  listCategories,
+  createCategory,
+  updateCategory,
+  getCategoryById,
+  deleteCategory
 };
