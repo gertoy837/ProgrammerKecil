@@ -2,12 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 const productController = require("../controllers/productController");
-const { productIdParamValidator, reviewValidator } = require("../validator/productValidator");
+const authMiddleware = require("../middleware/authMiddleware");
+const adminMiddleware = require("../middleware/adminMiddleware");
+const { productIdParamValidator, createProductValidator, updateProductValidator, reviewValidator } = require("../validator/productValidator");
 
 
-router.post("/", productController.createProduct);
-router.put("/:id", productController.updateProduct);
-router.delete("/:id", productController.deleteProduct);
+router.post("/", authMiddleware, adminMiddleware, createProductValidator, productController.createProduct);
+router.put("/:id", authMiddleware, adminMiddleware, updateProductValidator, productController.updateProduct);
+router.delete("/:id", authMiddleware, adminMiddleware, productIdParamValidator, productController.deleteProduct);
 
 router.get("/", productController.getAllProducts);
 router.get("/:id", productIdParamValidator, productController.getProductById);
