@@ -72,8 +72,49 @@ async function authenticateUser({ email, password }) {
   return { user: toPublicUser(user) };
 }
 
+
+async function getUserProfile(id) {
+  await ensureDatabaseReady();
+  const pool = getPool();
+  
+  const [rows] = await pool.query(
+    "SELECT id, name, email, role, createdAt FROM users WHERE id = ? LIMIT 1",
+    [id]
+  );
+
+  if (rows.length === 0) {
+    return { error: "User not found", statusCode: 404 };
+  }
+
+  return { user: rows[0] };
+}
+
+async function updateUserProfile(id, { name, email }) {
+  await ensureDatabaseReady();
+  const pool = getPool();
+
+  if (email) {
+    const [existing] = await pool.query(
+      "SELECT id FROM users WHERE LOWER(email) = LOWER(?) AND id != ?",
+      [email, id]
+    );
+    if (existing.length > 0) {
+      return { error: "Email already in use", statusCode: 409 };
+    }
+  }
+
+  await pool.query(
+    "UPDATE users SET name = ?, email = ? WHERE id = ?",
+    [name, email, id]
+  );
+
+  return getUserProfile(id);
+}
+
 module.exports = {
   authenticateUser,
   registerUser,
   toPublicUser,
+  getUserProfile,
+  updateUserProfile,
 };

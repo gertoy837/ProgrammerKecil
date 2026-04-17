@@ -1,6 +1,7 @@
 const dataStore = require("../models/dataStore");
 const { createAccessToken } = require("../lib/authToken");
 
+
 exports.register = async (req, res) => {
     const result = await dataStore.registerUser(req.body);
 
@@ -13,6 +14,7 @@ exports.register = async (req, res) => {
         token: createAccessToken(result.user),
     });
 };
+
 
 exports.login = async (req, res) => {
     const result = await dataStore.authenticateUser(req.body);
@@ -27,6 +29,34 @@ exports.login = async (req, res) => {
     });
 };
 
+
 exports.me = async (req, res) => {
-    res.json({ user: req.user });
+    try {
+        
+        const result = await dataStore.getUserProfile(req.user.id);
+
+        if (result.error) {
+            return res.status(result.statusCode || 404).json({ message: result.error });
+        }
+
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+
+exports.updateProfile = async (req, res) => {
+    try {
+        
+        const result = await dataStore.updateUserProfile(req.user.id, req.body);
+
+        if (result.error) {
+            return res.status(result.statusCode || 400).json({ message: result.error });
+        }
+
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 };
