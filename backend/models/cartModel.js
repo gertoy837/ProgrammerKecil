@@ -139,7 +139,74 @@ async function addToCart({ userId, productId, quantity = 1 }) {
   return getCartForUser(numericUserId);
 }
 
+async function updateQuantity(cartItemId, quantity) {
+  await ensureDatabaseReady();
+  const numericId = Number(cartItemId);
+  const numericQuantity = Number(quantity);
+
+  if (!Number.isInteger(numericId) || !Number.isInteger(numericQuantity) || numericQuantity < 1) {
+    return { error: "Valid cartItemId and quantity are required", statusCode: 400 };
+  }
+
+  const pool = getPool();
+  try {
+    const [result] = await pool.query(
+      `UPDATE cart_items SET quantity = ? WHERE id = ?`,
+      [numericQuantity, numericId]
+    );
+    return { success: true, affectedRows: result.affectedRows };
+  } catch (error) {
+    return { error: error.message, statusCode: 500 };
+  }
+}
+
+async function deleteItem(cartItemId) {
+  await ensureDatabaseReady();
+  const numericId = Number(cartItemId);
+
+  if (!Number.isInteger(numericId)) {
+    return { error: "Invalid cart item id", statusCode: 400 };
+  }
+
+  const pool = getPool();
+  try {
+    const [result] = await pool.query(
+      `DELETE FROM cart_items WHERE id = ?`,
+      [numericId]
+    );
+    return { success: true, affectedRows: result.affectedRows };
+  } catch (error) {
+    return { error: error.message, statusCode: 500 };
+  }
+}
+
+async function clearCart(userId) {
+  await ensureDatabaseReady();
+  const numericUserId = Number(userId);
+
+  if (!Number.isInteger(numericUserId)) {
+    return { error: "Invalid user id", statusCode: 400 };
+  }
+
+  const pool = getPool();
+  try {
+    const [cartRows] = await pool.query(`SELECT id FROM carts WHERE userId = ? LIMIT 1`, [numericUserId]);
+    
+    if (cartRows.length === 0) {
+      return { message: "Cart not found", statusCode: 404 };
+    }
+
+    const [result] = await pool.query(`DELETE FROM cart_items WHERE cartId = ?`, [cartRows[0].id]);
+    return { success: true, affectedRows: result.affectedRows };
+  } catch (error) {
+    return { error: error.message, statusCode: 500 };
+  }
+}
+
 module.exports = {
   addToCart,
   getCartForUser,
+  updateQuantity, 
+  deleteItem, 
+  clearCart,
 };
