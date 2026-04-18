@@ -25,3 +25,28 @@ exports.getCart = async (req, res) => {
 
   res.json(result);
 };
+
+exports.updateQuantity = async (req, res) => {
+  const { cartItemId, quantity } = req.body;
+  const result = await dataStore.updateQuantity(cartItemId, quantity);
+  if (result.error) {
+    return res.status(result.statusCode || 400).json({ message: result.error });
+  }
+  res.json({ message: "Quantity updated successfully" });
+};
+
+exports.deleteItem = async (req, res) => {
+  const result = await dataStore.deleteItem(req.params.id);
+  if (result.error) {
+    return res.status(result.statusCode || 400).json({ message: result.error });
+  }
+  res.json({ message: "Item deleted successfully" });
+};
+
+exports.clearCart = async (req, res) => {
+  const result = await dataStore.clearCart(req.params.userId);
+  if (result.error) {
+    return res.status(result.statusCode || 400).json({ message: result.error });
+  }
+  res.json({ message: "Cart cleared successfully" });
+};

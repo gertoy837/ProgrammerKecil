@@ -6,5 +6,8 @@ const { addToCartValidator, userIdParamValidator } = require("../validator/cartV
 
 router.post("/", addToCartValidator, cartController.addToCart);
 router.get("/:userId", userIdParamValidator, cartController.getCart);
+router.put("/update", cartController.updateQuantity);
+router.delete("/item/:id", cartController.deleteItem);
+router.delete("/clear/:userId", cartController.clearCart);
 
 module.exports = router;
