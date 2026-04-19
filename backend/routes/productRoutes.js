@@ -14,6 +14,6 @@ router.delete("/:id", authMiddleware, adminMiddleware, productIdParamValidator, 
 router.get("/", productController.getAllProducts);
 router.get("/:id", productIdParamValidator, productController.getProductById);
 
-router.post("/:id/reviews", reviewValidator, productController.addReview);
+router.post("/:id/reviews", authMiddleware, reviewValidator, productController.addReview);
 
 module.exports = router;

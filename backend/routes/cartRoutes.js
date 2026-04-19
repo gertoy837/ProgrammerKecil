@@ -2,12 +2,22 @@ const express = require("express");
 const router = express.Router();
 
 const cartController = require("../controllers/cartController");
-const { addToCartValidator, userIdParamValidator } = require("../validator/cartValidator");
+const authMiddleware = require("../middleware/authMiddleware");
+const {
+	addToCartValidator,
+	userIdParamValidator,
+	cartItemIdParamValidator,
+	updateQuantityValidator,
+} = require("../validator/cartValidator");
+
+router.use(authMiddleware);
 
 router.post("/", addToCartValidator, cartController.addToCart);
+router.get("/me", cartController.getMyCart);
 router.get("/:userId", userIdParamValidator, cartController.getCart);
-router.put("/update", cartController.updateQuantity);
-router.delete("/item/:id", cartController.deleteItem);
-router.delete("/clear/:userId", cartController.clearCart);
+router.put("/update", updateQuantityValidator, cartController.updateQuantity);
+router.delete("/item/:id", cartItemIdParamValidator, cartController.deleteItem);
+router.delete("/clear", cartController.clearMyCart);
+router.delete("/clear/:userId", userIdParamValidator, cartController.clearCart);
 
 module.exports = router;

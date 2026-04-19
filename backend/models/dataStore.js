@@ -1,6 +1,14 @@
 const { ensureDatabaseReady } = require("./db");
 const { authenticateUser, registerUser, toPublicUser } = require("./userModel");
-const { getCartForUser, addToCart, updateQuantity, deleteItem, clearCart } = require("./cartModel");
+const {
+  getCartForUser,
+  addToCart,
+  updateQuantity,
+  updateQuantityForUser,
+  deleteItem,
+  deleteItemForUser,
+  clearCart,
+} = require("./cartModel");
 
 const {
   listProducts,
@@ -38,6 +46,8 @@ module.exports = {
   getCategoryById,
   deleteCategory,
   updateQuantity,
+  updateQuantityForUser,
   deleteItem,
+  deleteItemForUser,
   clearCart
 };

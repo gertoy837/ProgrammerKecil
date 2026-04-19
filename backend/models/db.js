@@ -1,15 +1,38 @@
+const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const mysql = require("mysql2/promise");
 
 let poolPromise;
 let initializationPromise;
+const BCRYPT_SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS || 10);
 
-function hashPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
+function hashLegacyPassword(password, salt) {
   const hash = crypto
     .pbkdf2Sync(password, salt, 120000, 64, "sha512")
     .toString("hex");
 
-  return { salt, hash };
+  return hash;
+}
+
+async function hashPassword(password) {
+  return bcrypt.hash(String(password), BCRYPT_SALT_ROUNDS);
+}
+
+async function verifyPassword(password, user) {
+  if (!user || !user.passwordHash) {
+    return false;
+  }
+
+  if (user.salt === "bcrypt") {
+    return bcrypt.compare(String(password), user.passwordHash);
+  }
+
+  if (typeof user.salt === "string" && user.salt.length > 0) {
+    const legacyHash = hashLegacyPassword(String(password), user.salt);
+    return legacyHash === user.passwordHash;
+  }
+
+  return false;
 }
 
 function parseConnectionFromEnv() {
@@ -193,10 +216,10 @@ async function initializeDatabase() {
   const count = userCountRows[0] ? userCountRows[0].count : 0;
 
   if (Number(count) === 0) {
-    const { salt, hash } = hashPassword("admin123");
+    const hash = await hashPassword("admin123");
     await pool.query(
       `INSERT INTO users (name, email, passwordHash, salt, role) VALUES (?, ?, ?, ?, ?)`,
-      ["Admin", "admin@example.com", hash, salt, "admin"]
+      ["Admin", "admin@example.com", hash, "bcrypt", "admin"]
     );
   }
 }
@@ -205,4 +228,5 @@ module.exports = {
   ensureDatabaseReady,
   getPool,
   hashPassword,
+  verifyPassword,
 };

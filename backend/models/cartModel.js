@@ -160,6 +160,33 @@ async function updateQuantity(cartItemId, quantity) {
   }
 }
 
+async function updateQuantityForUser(userId, cartItemId, quantity) {
+  await ensureDatabaseReady();
+  const numericUserId = Number(userId);
+  const numericId = Number(cartItemId);
+  const numericQuantity = Number(quantity);
+
+  if (!Number.isInteger(numericUserId) || !Number.isInteger(numericId) || !Number.isInteger(numericQuantity) || numericQuantity < 1) {
+    return { error: "Valid userId, cartItemId and quantity are required", statusCode: 400 };
+  }
+
+  const pool = getPool();
+
+  try {
+    const [result] = await pool.query(
+      `UPDATE cart_items ci
+       JOIN carts c ON c.id = ci.cartId
+       SET ci.quantity = ?
+       WHERE ci.id = ? AND c.userId = ?`,
+      [numericQuantity, numericId, numericUserId]
+    );
+
+    return { success: true, affectedRows: result.affectedRows };
+  } catch (error) {
+    return { error: error.message, statusCode: 500 };
+  }
+}
+
 async function deleteItem(cartItemId) {
   await ensureDatabaseReady();
   const numericId = Number(cartItemId);
@@ -174,6 +201,31 @@ async function deleteItem(cartItemId) {
       `DELETE FROM cart_items WHERE id = ?`,
       [numericId]
     );
+    return { success: true, affectedRows: result.affectedRows };
+  } catch (error) {
+    return { error: error.message, statusCode: 500 };
+  }
+}
+
+async function deleteItemForUser(userId, cartItemId) {
+  await ensureDatabaseReady();
+  const numericUserId = Number(userId);
+  const numericId = Number(cartItemId);
+
+  if (!Number.isInteger(numericUserId) || !Number.isInteger(numericId)) {
+    return { error: "Valid userId and cart item id are required", statusCode: 400 };
+  }
+
+  const pool = getPool();
+
+  try {
+    const [result] = await pool.query(
+      `DELETE ci FROM cart_items ci
+       JOIN carts c ON c.id = ci.cartId
+       WHERE ci.id = ? AND c.userId = ?`,
+      [numericId, numericUserId]
+    );
+
     return { success: true, affectedRows: result.affectedRows };
   } catch (error) {
     return { error: error.message, statusCode: 500 };
@@ -207,6 +259,8 @@ module.exports = {
   addToCart,
   getCartForUser,
   updateQuantity, 
+  updateQuantityForUser,
   deleteItem, 
+  deleteItemForUser,
   clearCart,
 };
