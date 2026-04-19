@@ -54,8 +54,8 @@ async function listProducts() {
        c.name AS categoryName,
        (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
        (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
-     FROM product p
-     LEFT JOIN category c ON c.id = p.categoryId
+      FROM products p
+      LEFT JOIN categories c ON c.id = p.categoryId
      ORDER BY p.id ASC`
   );
 
@@ -83,8 +83,8 @@ async function getProductById(productId) {
        c.name AS categoryName,
        (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
        (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
-     FROM product p
-     LEFT JOIN category c ON c.id = p.categoryId
+    FROM products p
+    LEFT JOIN categories c ON c.id = p.categoryId
      WHERE p.id = ?
      LIMIT 1`,
     [productId]
@@ -150,7 +150,7 @@ async function createProduct(data) {
   const pool = getPool();
 
   const [result] = await pool.query(
-    `INSERT INTO product (name, price, stock, description, image, categoryId)
+    `INSERT INTO products (name, price, stock, description, image, categoryId)
      VALUES (?, ?, ?, ?, ?, ?)`,
     [
       data.name,
@@ -170,7 +170,7 @@ async function updateProduct(id, data) {
   const pool = getPool();
 
   const [result] = await pool.query(
-    `UPDATE product 
+    `UPDATE products 
      SET name=?, price=?, stock=?, description=?, image=?, categoryId=? 
      WHERE id=?`,
     [
@@ -192,7 +192,7 @@ async function deleteProduct(id) {
   const pool = getPool();
 
   const [result] = await pool.query(
-    "DELETE FROM product WHERE id=?",
+    "DELETE FROM products WHERE id=?",
     [id]
   );
 

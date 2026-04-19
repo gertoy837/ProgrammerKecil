@@ -1,17 +1,19 @@
-const { getPool } = require("./db");
+const { ensureDatabaseReady, getPool } = require("./db");
 
 // GET ALL
 async function listCategories() {
+  await ensureDatabaseReady();
   const pool = getPool();
-  const [rows] = await pool.query("SELECT * FROM category");
+  const [rows] = await pool.query("SELECT * FROM categories");
   return rows;
 }
 
 // GET BY ID 🔥
 async function getCategoryById(id) {
+  await ensureDatabaseReady();
   const pool = getPool();
   const [rows] = await pool.query(
-    "SELECT * FROM category WHERE id = ?",
+    "SELECT * FROM categories WHERE id = ?",
     [id]
   );
   return rows[0] || null;
@@ -19,9 +21,10 @@ async function getCategoryById(id) {
 
 // CREATE
 async function createCategory(name) {
+  await ensureDatabaseReady();
   const pool = getPool();
   const [result] = await pool.query(
-    "INSERT INTO category (name) VALUES (?)",
+    "INSERT INTO categories (name) VALUES (?)",
     [name]
   );
   return result.insertId;
@@ -29,9 +32,10 @@ async function createCategory(name) {
 
 // UPDATE
 async function updateCategory(id, name) {
+  await ensureDatabaseReady();
   const pool = getPool();
   const [result] = await pool.query(
-    "UPDATE category SET name=? WHERE id=?",
+    "UPDATE categories SET name=? WHERE id=?",
     [name, id]
   );
   return result.affectedRows > 0;
@@ -39,9 +43,10 @@ async function updateCategory(id, name) {
 
 // DELETE
 async function deleteCategory(id) {
+  await ensureDatabaseReady();
   const pool = getPool();
   const [result] = await pool.query(
-    "DELETE FROM category WHERE id=?",
+    "DELETE FROM categories WHERE id=?",
     [id]
   );
   return result.affectedRows > 0;

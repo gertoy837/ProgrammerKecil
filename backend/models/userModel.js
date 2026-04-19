@@ -1,4 +1,4 @@
-const { ensureDatabaseReady, getPool, hashPassword } = require("./db");
+const { ensureDatabaseReady, getPool, hashPassword, verifyPassword } = require("./db");
 
 function toPublicUser(user) {
   const { passwordHash, salt, ...publicUser } = user;
@@ -23,10 +23,10 @@ async function registerUser({ name, email, password, role = "user" }) {
     return { error: "Email is already registered", statusCode: 409 };
   }
 
-  const { salt, hash } = hashPassword(password);
+  const hash = await hashPassword(password);
   const [result] = await pool.query(
     `INSERT INTO users (name, email, passwordHash, salt, role) VALUES (?, ?, ?, ?, ?)`,
-    [String(name), normalizedEmail, hash, salt, role === "admin" ? "admin" : "user"]
+    [String(name), normalizedEmail, hash, "bcrypt", role === "admin" ? "admin" : "user"]
   );
 
   return {
@@ -35,7 +35,7 @@ async function registerUser({ name, email, password, role = "user" }) {
       name: String(name),
       email: normalizedEmail,
       passwordHash: hash,
-      salt,
+      salt: "bcrypt",
       role: role === "admin" ? "admin" : "user",
       createdAt: new Date().toISOString(),
     }),
@@ -63,10 +63,19 @@ async function authenticateUser({ email, password }) {
   }
 
   const user = rows[0];
-  const { hash } = hashPassword(password, user.salt);
+  const validPassword = await verifyPassword(password, user);
 
-  if (hash !== user.passwordHash) {
+  if (!validPassword) {
     return { error: "Invalid email or password", statusCode: 401 };
+  }
+
+  // Upgrade legacy password hash to bcrypt after a successful login.
+  if (user.salt !== "bcrypt") {
+    const upgradedHash = await hashPassword(password);
+    await pool.query(
+      `UPDATE users SET passwordHash = ?, salt = 'bcrypt' WHERE id = ?`,
+      [upgradedHash, user.id]
+    );
   }
 
   return { user: toPublicUser(user) };

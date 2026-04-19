@@ -90,7 +90,7 @@ exports.addReview = async (req, res) => {
 
     const result = await dataStore.addReview({
       productId,
-      userId: req.body.userId,
+      userId: req.user.id,
       review: req.body.review,
       rating: req.body.rating,
     });
