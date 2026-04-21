@@ -1,61 +1,76 @@
-const { ensureDatabaseReady, getPool } = require("./db");
+const { ensureDatabaseReady } = require("./db");
+const {
+  executeQuery,
+  executeQueryOne,
+  executeInsert,
+  executeModify,
+  getAll,
+  getById,
+  deleteById,
+} = require("./queryHelper");
 
-// GET ALL
+const TABLE = "categories";
+
+/**
+ * Get all categories ordered by ID
+ * @returns {Promise<Array>} List of category objects
+ */
 async function listCategories() {
   await ensureDatabaseReady();
-  const pool = getPool();
-  const [rows] = await pool.query("SELECT * FROM categories");
-  return rows;
+  return getAll(TABLE, { orderBy: "id ASC" });
 }
 
-// GET BY ID 🔥
+/**
+ * Get category by ID
+ * @param {number} id - Category ID
+ * @returns {Promise<Object|null>} Category object or null if not found
+ */
 async function getCategoryById(id) {
   await ensureDatabaseReady();
-  const pool = getPool();
-  const [rows] = await pool.query(
-    "SELECT * FROM categories WHERE id = ?",
-    [id]
-  );
-  return rows[0] || null;
+  return getById(TABLE, id);
 }
 
-// CREATE
+/**
+ * Create a new category
+ * @param {string} name - Category name
+ * @returns {Promise<number>} ID of created category
+ */
 async function createCategory(name) {
   await ensureDatabaseReady();
-  const pool = getPool();
-  const [result] = await pool.query(
+  return executeInsert(
     "INSERT INTO categories (name) VALUES (?)",
     [name]
   );
-  return result.insertId;
 }
 
-// UPDATE
+/**
+ * Update a category
+ * @param {number} id - Category ID
+ * @param {string} name - New category name
+ * @returns {Promise<boolean>} True if category was updated
+ */
 async function updateCategory(id, name) {
   await ensureDatabaseReady();
-  const pool = getPool();
-  const [result] = await pool.query(
-    "UPDATE categories SET name=? WHERE id=?",
+  return executeModify(
+    "UPDATE categories SET name = ? WHERE id = ?",
     [name, id]
   );
-  return result.affectedRows > 0;
 }
 
-// DELETE
+/**
+ * Delete a category
+ * @param {number} id - Category ID
+ * @returns {Promise<boolean>} True if category was deleted
+ */
 async function deleteCategory(id) {
   await ensureDatabaseReady();
-  const pool = getPool();
-  const [result] = await pool.query(
-    "DELETE FROM categories WHERE id=?",
-    [id]
-  );
-  return result.affectedRows > 0;
+  return deleteById(TABLE, id);
 }
 
 module.exports = {
   listCategories,
-  getCategoryById, 
+  getCategoryById,
   createCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 };

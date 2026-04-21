@@ -1,5 +1,22 @@
 const { ensureDatabaseReady, getPool } = require("./db");
+const {
+  executeQuery,
+  executeQueryOne,
+  executeInsert,
+  executeModify,
+  getAll,
+  getById,
+  deleteById,
+  exists,
+} = require("./queryHelper");
 
+const TABLE = "products";
+
+/**
+ * Map database row to product object with normalized data
+ * @param {Object} row - Database row
+ * @returns {Object} Mapped product object
+ */
 function mapProductRow(row) {
   return {
     id: row.id,
@@ -18,17 +35,22 @@ function mapProductRow(row) {
   };
 }
 
+/**
+ * Load all reviews for a specific product
+ * @param {number} productId - Product ID
+ * @returns {Promise<Array>} Array of review objects
+ */
 async function loadReviewsForProduct(productId) {
-  const pool = getPool();
-  const [rows] = await pool.query(
-    `SELECT r.id, r.userId, u.name AS userName, r.review, r.rating, r.createdAt
-     FROM reviews r
-     JOIN users u ON u.id = r.userId
-     WHERE r.productId = ?
-     ORDER BY r.createdAt DESC, r.id DESC`,
-    [productId]
-  );
-
+  const sql = `
+    SELECT r.id, r.userId, u.name AS userName, r.review, r.rating, r.createdAt
+    FROM reviews r
+    JOIN users u ON u.id = r.userId
+    WHERE r.productId = ?
+    ORDER BY r.createdAt DESC, r.id DESC
+  `;
+  
+  const rows = await executeQuery(sql, [productId]);
+  
   return rows.map((row) => ({
     id: row.id,
     userId: row.userId,
@@ -39,25 +61,68 @@ async function loadReviewsForProduct(productId) {
   }));
 }
 
+/**
+ * Get product details with aggregated data (JOIN category, count reviews)
+ * @param {number} productId - Product ID
+ * @returns {Promise<Object|null>} Mapped product with reviews or null
+ */
+async function getProductById(productId) {
+  await ensureDatabaseReady();
+  
+  const sql = `
+    SELECT
+      p.id,
+      p.name,
+      p.price,
+      p.stock,
+      p.description,
+      p.image,
+      p.categoryId,
+      c.name AS categoryName,
+      (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
+      (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
+    FROM products p
+    LEFT JOIN categories c ON c.id = p.categoryId
+    WHERE p.id = ?
+    LIMIT 1
+  `;
+  
+  const row = await executeQueryOne(sql, [productId]);
+  
+  if (!row) {
+    return null;
+  }
+
+  const product = mapProductRow(row);
+  product.reviews = await loadReviewsForProduct(product.id);
+  return product;
+}
+
+/**
+ * List all products with aggregated data
+ * @returns {Promise<Array>} Array of mapped products with reviews
+ */
 async function listProducts() {
   await ensureDatabaseReady();
-  const pool = getPool();
-  const [rows] = await pool.query(
-    `SELECT
-       p.id,
-       p.name,
-       p.price,
-       p.stock,
-       p.description,
-       p.image,
-       p.categoryId,
-       c.name AS categoryName,
-       (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
-       (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
-      FROM products p
-      LEFT JOIN categories c ON c.id = p.categoryId
-     ORDER BY p.id ASC`
-  );
+  
+  const sql = `
+    SELECT
+      p.id,
+      p.name,
+      p.price,
+      p.stock,
+      p.description,
+      p.image,
+      p.categoryId,
+      c.name AS categoryName,
+      (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
+      (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
+    FROM products p
+    LEFT JOIN categories c ON c.id = p.categoryId
+    ORDER BY p.id ASC
+  `;
+  
+  const rows = await executeQuery(sql);
 
   return Promise.all(
     rows.map(async (row) => {
@@ -68,88 +133,15 @@ async function listProducts() {
   );
 }
 
-async function getProductById(productId) {
-  await ensureDatabaseReady();
-  const pool = getPool();
-  const [rows] = await pool.query(
-    `SELECT
-       p.id,
-       p.name,
-       p.price,
-       p.stock,
-       p.description,
-       p.image,
-       p.categoryId,
-       c.name AS categoryName,
-       (SELECT AVG(r.rating) FROM reviews r WHERE r.productId = p.id) AS averageRating,
-       (SELECT COUNT(*) FROM reviews r WHERE r.productId = p.id) AS reviewCount
-    FROM products p
-    LEFT JOIN categories c ON c.id = p.categoryId
-     WHERE p.id = ?
-     LIMIT 1`,
-    [productId]
-  );
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  const product = mapProductRow(rows[0]);
-  product.reviews = await loadReviewsForProduct(product.id);
-  return product;
-}
-
-async function addReview({ productId, userId, review, rating }) {
-  await ensureDatabaseReady();
-  const numericProductId = Number(productId);
-  const numericUserId = Number(userId);
-  const normalizedRating = Number(rating);
-
-  if (!Number.isInteger(numericProductId) || !Number.isInteger(numericUserId)) {
-    return { error: "Valid productId and userId are required", statusCode: 400 };
-  }
-
-  if (!review || !Number.isInteger(normalizedRating) || normalizedRating < 1 || normalizedRating > 5) {
-    return { error: "Review and rating 1-5 are required", statusCode: 400 };
-  }
-
-  const pool = getPool();
-  const [[product]] = await pool.query("SELECT id FROM products WHERE id = ? LIMIT 1", [numericProductId]);
-  const [[user]] = await pool.query("SELECT id FROM users WHERE id = ? LIMIT 1", [numericUserId]);
-
-  if (!product) {
-    return { error: "Product not found", statusCode: 404 };
-  }
-
-  if (!user) {
-    return { error: "User not found", statusCode: 404 };
-  }
-
-  const [result] = await pool.query(
-    `INSERT INTO reviews (userId, productId, review, rating) VALUES (?, ?, ?, ?)`,
-    [numericUserId, numericProductId, String(review), normalizedRating]
-  );
-
-  const refreshedProduct = await getProductById(numericProductId);
-
-  return {
-    review: {
-      id: result.insertId,
-      userId: numericUserId,
-      productId: numericProductId,
-      review: String(review),
-      rating: normalizedRating,
-      createdAt: new Date().toISOString(),
-    },
-    product: refreshedProduct,
-  };
-}
-
+/**
+ * Create a new product
+ * @param {Object} data - Product data { name, price, stock, description, image, categoryId }
+ * @returns {Promise<number>} ID of created product
+ */
 async function createProduct(data) {
   await ensureDatabaseReady();
-  const pool = getPool();
 
-  const [result] = await pool.query(
+  const insertId = await executeInsert(
     `INSERT INTO products (name, price, stock, description, image, categoryId)
      VALUES (?, ?, ?, ?, ?, ?)`,
     [
@@ -162,17 +154,22 @@ async function createProduct(data) {
     ]
   );
 
-  return result.insertId;
+  return insertId;
 }
 
+/**
+ * Update an existing product
+ * @param {number} id - Product ID
+ * @param {Object} data - Product data to update { name, price, stock, description, image, categoryId }
+ * @returns {Promise<boolean>} True if product was updated
+ */
 async function updateProduct(id, data) {
   await ensureDatabaseReady();
-  const pool = getPool();
 
-  const [result] = await pool.query(
+  return executeModify(
     `UPDATE products 
-     SET name=?, price=?, stock=?, description=?, image=?, categoryId=? 
-     WHERE id=?`,
+     SET name = ?, price = ?, stock = ?, description = ?, image = ?, categoryId = ? 
+     WHERE id = ?`,
     [
       data.name,
       data.price,
@@ -183,22 +180,73 @@ async function updateProduct(id, data) {
       id
     ]
   );
-
-  return result.affectedRows > 0;
 }
 
+/**
+ * Delete a product
+ * @param {number} id - Product ID
+ * @returns {Promise<boolean>} True if product was deleted
+ */
 async function deleteProduct(id) {
   await ensureDatabaseReady();
-  const pool = getPool();
-
-  const [result] = await pool.query(
-    "DELETE FROM products WHERE id=?",
-    [id]
-  );
-
-  return result.affectedRows > 0;
+  return deleteById(TABLE, id);
 }
 
+/**
+ * Add a review to a product
+ * @param {Object} params - Review data { productId, userId, review, rating }
+ * @returns {Promise<Object>} Result object with review, product, or error
+ */
+async function addReview({ productId, userId, review, rating }) {
+  await ensureDatabaseReady();
+  
+  const numericProductId = Number(productId);
+  const numericUserId = Number(userId);
+  const normalizedRating = Number(rating);
+
+  // Validate IDs are integers
+  if (!Number.isInteger(numericProductId) || !Number.isInteger(numericUserId)) {
+    return { error: "Valid productId and userId are required", statusCode: 400 };
+  }
+
+  // Validate review and rating
+  if (!review || !Number.isInteger(normalizedRating) || normalizedRating < 1 || normalizedRating > 5) {
+    return { error: "Review and rating 1-5 are required", statusCode: 400 };
+  }
+
+  // Check if product exists
+  const productExists = await exists(TABLE, numericProductId);
+  if (!productExists) {
+    return { error: "Product not found", statusCode: 404 };
+  }
+
+  // Check if user exists
+  const userExists = await exists("users", numericUserId);
+  if (!userExists) {
+    return { error: "User not found", statusCode: 404 };
+  }
+
+  // Insert review
+  const reviewId = await executeInsert(
+    `INSERT INTO reviews (userId, productId, review, rating) VALUES (?, ?, ?, ?)`,
+    [numericUserId, numericProductId, String(review), normalizedRating]
+  );
+
+  // Fetch updated product with new review
+  const refreshedProduct = await getProductById(numericProductId);
+
+  return {
+    review: {
+      id: reviewId,
+      userId: numericUserId,
+      productId: numericProductId,
+      review: String(review),
+      rating: normalizedRating,
+      createdAt: new Date().toISOString(),
+    },
+    product: refreshedProduct,
+  };
+}
 
 module.exports = {
   addReview,
@@ -207,5 +255,6 @@ module.exports = {
   mapProductRow,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  loadReviewsForProduct,
 };
