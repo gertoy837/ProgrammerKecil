@@ -4,13 +4,17 @@ const dataStore = require("../models/dataStore");
 exports.getAllProducts = async (req, res) => {
   try {
     const result = await dataStore.listProducts();
-    res.json({ products: result });
+
+    res.json({
+      message: "Success get all products",
+      products: result
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// GET BY ID
+// GET BY ID (INI TASK SPRINT 5 KAMU 🔥)
 exports.getProductById = async (req, res) => {
   try {
     const productId = Number(req.params.id);
@@ -25,7 +29,10 @@ exports.getProductById = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    res.json({ product });
+    res.json({
+      message: "Success get product detail",
+      product
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -50,6 +57,10 @@ exports.updateProduct = async (req, res) => {
   try {
     const id = Number(req.params.id);
 
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ message: "Invalid product id" });
+    }
+
     const success = await dataStore.updateProduct(id, req.body);
 
     if (!success) {
@@ -66,6 +77,10 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const id = Number(req.params.id);
+
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ message: "Invalid product id" });
+    }
 
     const success = await dataStore.deleteProduct(id);
 
@@ -88,18 +103,31 @@ exports.addReview = async (req, res) => {
       return res.status(400).json({ message: "Invalid product id" });
     }
 
+    // fallback (jika userId tidak ada di token, coba ambil dari body)
+    const userId = req.user?.id || req.body.userId;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID required" });
+    }
+
     const result = await dataStore.addReview({
       productId,
-      userId: req.user.id,
+      userId,
       review: req.body.review,
       rating: req.body.rating,
     });
 
     if (result.error) {
-      return res.status(result.statusCode || 400).json({ message: result.error });
+      return res.status(result.statusCode || 400).json({
+        message: result.error
+      });
     }
 
-    res.status(201).json({ review: result.review, product: result.product });
+    res.status(201).json({
+      message: "Review berhasil ditambahkan",
+      review: result.review,
+      product: result.product
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
