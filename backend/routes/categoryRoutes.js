@@ -8,7 +8,7 @@ const { categoryIdParamValidator, createCategoryValidator, updateCategoryValidat
 
 router.get("/", categoryController.getCategories);
 router.get("/:id", categoryIdParamValidator, categoryController.getCategoryById); 
-router.post("/", createCategoryValidator, authMiddleware, adminMiddleware,categoryController.createCategory);
+router.post("/", authMiddleware, adminMiddleware, createCategoryValidator, categoryController.createCategory);
 router.put("/:id", authMiddleware, adminMiddleware, updateCategoryValidator, categoryController.updateCategory);
 router.delete("/:id", authMiddleware, adminMiddleware, categoryIdParamValidator, categoryController.deleteCategory);
 

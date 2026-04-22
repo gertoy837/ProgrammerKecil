@@ -1,4 +1,4 @@
-const { getPool } = require("./db");
+const { getPool } = require("../lib/db");
 
 /**
  * Execute a SELECT query with parameters

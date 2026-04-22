@@ -1,4 +1,4 @@
-const { ensureDatabaseReady } = require("./db");
+const { ensureDatabaseReady } = require("../lib/db");
 const {
   executeQuery,
   executeQueryOne,

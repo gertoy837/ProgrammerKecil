@@ -1,7 +1,6 @@
 const dataStore = require("../models/dataStore");
 const { createAccessToken } = require("../lib/authToken");
 
-
 exports.register = async (req, res) => {
     const result = await dataStore.registerUser(req.body);
 
@@ -14,7 +13,6 @@ exports.register = async (req, res) => {
         token: createAccessToken(result.user),
     });
 };
-
 
 exports.login = async (req, res) => {
     const result = await dataStore.authenticateUser(req.body);
@@ -29,7 +27,6 @@ exports.login = async (req, res) => {
     });
 };
 
-
 exports.me = async (req, res) => {
     try {
         res.json({
@@ -43,10 +40,9 @@ exports.me = async (req, res) => {
     }
 };
 
-
 exports.updateProfile = async (req, res) => {
     try {
-        
+
         const result = await dataStore.updateUserProfile(req.user.id, req.body);
 
         if (result.error) {
@@ -57,4 +53,9 @@ exports.updateProfile = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Internal Server Error" });
     }
+};
+
+exports.logout = (req, res) => {
+    // JWT is stateless; logout is handled on client by deleting the token.
+    res.json({ message: "Logout successful" });
 };

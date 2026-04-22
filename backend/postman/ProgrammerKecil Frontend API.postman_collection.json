@@ -99,6 +99,58 @@
               ]
             }
           }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Budi Updated\",\n  \"email\": \"budi@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/updateProfile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "updateProfile"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
         }
       ]
     },
@@ -142,13 +194,17 @@
             "method": "POST",
             "header": [
               {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": {{user_id}},\n  \"review\": \"Barang bagus dan pengiriman cepat\",\n  \"rating\": 5\n}"
+              "raw": "{\n  \"review\": \"Barang bagus dan pengiriman cepat\",\n  \"rating\": 5\n}"
             },
             "url": {
               "raw": "{{base_url}}/products/{{product_id}}/reviews",
@@ -210,13 +266,17 @@
             "method": "POST",
             "header": [
               {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": {{user_id}},\n  \"productId\": {{product_id}},\n  \"quantity\": 1\n}"
+              "raw": "{\n  \"productId\": {{product_id}},\n  \"quantity\": 1\n}"
             },
             "url": {
               "raw": "{{base_url}}/cart",
@@ -230,17 +290,98 @@
           }
         },
         {
-          "name": "Get Cart By User",
+          "name": "Get My Cart",
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
             "url": {
-              "raw": "{{base_url}}/cart/{{user_id}}",
+              "raw": "{{base_url}}/cart/me",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "cart",
-                "{{user_id}}"
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Cart Quantity",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartItemId\": {{cart_item_id}},\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cart/update",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cart",
+                "update"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Cart Item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cart/item/{{cart_item_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cart",
+                "item",
+                "{{cart_item_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Clear My Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cart/clear",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cart",
+                "clear"
               ]
             }
           }
@@ -267,6 +408,10 @@
     },
     {
       "key": "category_id",
+      "value": "1"
+    },
+    {
+      "key": "cart_item_id",
       "value": "1"
     }
   ]

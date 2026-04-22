@@ -1,5 +1,11 @@
-const { ensureDatabaseReady } = require("./db");
-const { authenticateUser, registerUser, toPublicUser } = require("./userModel");
+const { ensureDatabaseReady } = require("../lib/db");
+const {
+  authenticateUser,
+  registerUser,
+  toPublicUser,
+  getUserProfile,
+  updateUserProfile,
+} = require("./userModel");
 const {
   getCartForUser,
   addToCart,
@@ -38,6 +44,8 @@ module.exports = {
   listProducts,
   registerUser,
   toPublicUser,
+  getUserProfile,
+  updateUserProfile,
   createProduct,
   updateProduct,
   deleteProduct,
