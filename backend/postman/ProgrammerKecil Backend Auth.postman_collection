@@ -1,0 +1,58 @@
+{
+  "info": {
+    "_postman_id": "d79fd9f0-1714-4881-9f60-2538c296c4bf",
+    "name": "New Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53700405",
+    "_collection_link": "https://go.postman.co/collection/53700405-d79fd9f0-1714-4881-9f60-2538c296c4bf?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Register New User",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Get Current User Profile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6Ik9yYW5nIEtlcmVuIiwiZW1haWwiOiJtdXRpYUBrZXJlbi5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc3Njc3NDg0NSwiZXhwIjoxNzc3Mzc5NjQ1fQ.0ujSH6fr13VZpMKCXpaeevJhZhsclCCmWUCFzSMaL0U",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/auth/me",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}

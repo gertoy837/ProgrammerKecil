@@ -32,16 +32,14 @@ exports.login = async (req, res) => {
 
 exports.me = async (req, res) => {
     try {
-        
-        const result = await dataStore.getUserProfile(req.user.id);
-
-        if (result.error) {
-            return res.status(result.statusCode || 404).json({ message: result.error });
-        }
-
-        res.json(result);
+        res.json({
+            id: req.user.id,
+            name: req.user.name,
+            email: req.user.email,
+            role: req.user.role
+        });
     } catch (error) {
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ message: error.message });
     }
 };
 
