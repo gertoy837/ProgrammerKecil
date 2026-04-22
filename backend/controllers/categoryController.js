@@ -1,6 +1,5 @@
 const dataStore = require("../models/dataStore");
 
-// GET ALL
 exports.getCategories = async (req, res) => {
   try {
     const categories = await dataStore.listCategories();
@@ -10,7 +9,6 @@ exports.getCategories = async (req, res) => {
   }
 };
 
-// CREATE
 exports.createCategory = async (req, res) => {
   try {
     const { name } = req.body;
@@ -26,7 +24,6 @@ exports.createCategory = async (req, res) => {
   }
 };
 
-// UPDATE
 exports.updateCategory = async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -44,7 +41,6 @@ exports.updateCategory = async (req, res) => {
   }
 };
 
-// DELETE
 exports.deleteCategory = async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -61,7 +57,6 @@ exports.deleteCategory = async (req, res) => {
   }
 };
 
-// GET BY ID 🔥
 exports.getCategoryById = async (req, res) => {
   try {
     const id = Number(req.params.id);

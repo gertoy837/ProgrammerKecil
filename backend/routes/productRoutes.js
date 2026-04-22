@@ -12,33 +12,15 @@ const {
   reviewValidator
 } = require("../validator/productValidator");
 
-// =======================
-// PUBLIC ROUTES
-// =======================
 
-// GET ALL PRODUCTS
 router.get("/", productController.getAllProducts);
-
-// GET PRODUCT DETAIL
 router.get("/:id", productIdParamValidator, productController.getProductById);
-
-// =======================
-// REVIEW ROUTES
-// =======================
-
-// ADD REVIEW
 router.post(
   "/:id/reviews",
   authMiddleware,
   reviewValidator,
   productController.addReview
 );
-
-// =======================
-// ADMIN ROUTES
-// =======================
-
-// CREATE PRODUCT
 router.post(
   "/",
   authMiddleware,
@@ -46,8 +28,6 @@ router.post(
   createProductValidator,
   productController.createProduct
 );
-
-// UPDATE PRODUCT
 router.put(
   "/:id",
   authMiddleware,
@@ -56,8 +36,6 @@ router.put(
   updateProductValidator,
   productController.updateProduct
 );
-
-// DELETE PRODUCT
 router.delete(
   "/:id",
   authMiddleware,

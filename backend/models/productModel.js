@@ -1,4 +1,4 @@
-const { ensureDatabaseReady, getPool } = require("./db");
+const { ensureDatabaseReady, getPool } = require("../lib/db");
 const {
   executeQuery,
   executeQueryOne,
@@ -166,19 +166,24 @@ async function createProduct(data) {
 async function updateProduct(id, data) {
   await ensureDatabaseReady();
 
+  const allowedFields = ["name", "price", "stock", "description", "image", "categoryId"];
+  const updates = [];
+  const values = [];
+
+  for (const field of allowedFields) {
+    if (data[field] !== undefined) {
+      updates.push(`${field} = ?`);
+      values.push(data[field]);
+    }
+  }
+
+  if (updates.length === 0) {
+    return false;
+  }
+
   return executeModify(
-    `UPDATE products 
-     SET name = ?, price = ?, stock = ?, description = ?, image = ?, categoryId = ? 
-     WHERE id = ?`,
-    [
-      data.name,
-      data.price,
-      data.stock,
-      data.description,
-      data.image,
-      data.categoryId,
-      id
-    ]
+    `UPDATE products SET ${updates.join(", ")} WHERE id = ?`,
+    [...values, id]
   );
 }
 

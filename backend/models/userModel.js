@@ -1,4 +1,4 @@
-const { ensureDatabaseReady, getPool, hashPassword, verifyPassword } = require("./db");
+const { ensureDatabaseReady, getPool, hashPassword, verifyPassword } = require("../lib/db");
 
 function toPublicUser(user) {
   const { passwordHash, salt, ...publicUser } = user;
@@ -102,19 +102,39 @@ async function updateUserProfile(id, { name, email }) {
   await ensureDatabaseReady();
   const pool = getPool();
 
-  if (email) {
+  const hasName = typeof name === "string" && name.trim() !== "";
+  const hasEmail = typeof email === "string" && email.trim() !== "";
+
+  if (!hasName && !hasEmail) {
+    return { error: "At least one of name or email is required", statusCode: 400 };
+  }
+
+  if (hasEmail) {
+    const normalizedEmail = String(email).toLowerCase();
     const [existing] = await pool.query(
       "SELECT id FROM users WHERE LOWER(email) = LOWER(?) AND id != ?",
-      [email, id]
+      [normalizedEmail, id]
     );
+
     if (existing.length > 0) {
       return { error: "Email already in use", statusCode: 409 };
     }
+
+    email = normalizedEmail;
   }
+
+  const currentProfile = await getUserProfile(id);
+
+  if (currentProfile.error) {
+    return currentProfile;
+  }
+
+  const nextName = hasName ? String(name).trim() : currentProfile.user.name;
+  const nextEmail = hasEmail ? String(email).trim() : currentProfile.user.email;
 
   await pool.query(
     "UPDATE users SET name = ?, email = ? WHERE id = ?",
-    [name, email, id]
+    [nextName, nextEmail, id]
   );
 
   return getUserProfile(id);

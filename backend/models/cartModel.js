@@ -1,4 +1,4 @@
-const { ensureDatabaseReady, getPool } = require("./db");
+const { ensureDatabaseReady, getPool } = require("../lib/db");
 const { mapProductRow } = require("./productModel");
 
 async function getCartForUser(userId) {
@@ -245,7 +245,7 @@ async function clearCart(userId) {
     const [cartRows] = await pool.query(`SELECT id FROM carts WHERE userId = ? LIMIT 1`, [numericUserId]);
     
     if (cartRows.length === 0) {
-      return { message: "Cart not found", statusCode: 404 };
+      return { error: "Cart not found", statusCode: 404 };
     }
 
     const [result] = await pool.query(`DELETE FROM cart_items WHERE cartId = ?`, [cartRows[0].id]);

@@ -1,6 +1,5 @@
 const dataStore = require("../models/dataStore");
 
-// GET ALL
 exports.getAllProducts = async (req, res) => {
   try {
     const result = await dataStore.listProducts();
@@ -14,7 +13,6 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-// GET BY ID (INI TASK SPRINT 5 KAMU 🔥)
 exports.getProductById = async (req, res) => {
   try {
     const productId = Number(req.params.id);
@@ -38,7 +36,6 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-// CREATE
 exports.createProduct = async (req, res) => {
   try {
     const id = await dataStore.createProduct(req.body);
@@ -52,7 +49,6 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// UPDATE
 exports.updateProduct = async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -73,7 +69,6 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// DELETE
 exports.deleteProduct = async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -94,7 +89,6 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// ADD REVIEW
 exports.addReview = async (req, res) => {
   try {
     const productId = Number(req.params.id);
@@ -103,16 +97,9 @@ exports.addReview = async (req, res) => {
       return res.status(400).json({ message: "Invalid product id" });
     }
 
-    // fallback (jika userId tidak ada di token, coba ambil dari body)
-    const userId = req.user?.id || req.body.userId;
-
-    if (!userId) {
-      return res.status(400).json({ message: "User ID required" });
-    }
-
     const result = await dataStore.addReview({
       productId,
-      userId,
+      userId: req.user.id,
       review: req.body.review,
       rating: req.body.rating,
     });
