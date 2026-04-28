@@ -38,11 +38,16 @@ exports.getProductById = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    const id = await dataStore.createProduct(req.body);
+    const imagePath = req.file ? req.file.path : null;
+
+    const id = await dataStore.createProduct({
+      ...req.body,
+      image: imagePath,
+    });
 
     res.status(201).json({
       message: "Produk berhasil dibuat",
-      productId: id
+      productId: id,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -57,7 +62,12 @@ exports.updateProduct = async (req, res) => {
       return res.status(400).json({ message: "Invalid product id" });
     }
 
-    const success = await dataStore.updateProduct(id, req.body);
+    const imagePath = req.file ? req.file.path : undefined;
+
+    const success = await dataStore.updateProduct(id, {
+      ...req.body,
+      ...(imagePath && { image: imagePath }),
+    });
 
     if (!success) {
       return res.status(404).json({ message: "Produk tidak ditemukan" });
