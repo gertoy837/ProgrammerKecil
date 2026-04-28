@@ -18,6 +18,10 @@ logs/
 
 # build output (kalau suatu saat pakai TS/Babel)
 dist/
+
+# uploaded files
+uploads/products/*
+uploads/categories/*
 build/
 out/
 
