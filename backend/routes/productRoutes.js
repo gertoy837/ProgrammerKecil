@@ -5,6 +5,13 @@ const productController = require("../controllers/productController");
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
 
+const { upload } = require("../config/multer");
+
+const {
+  handleFileUploadError,
+  validateFilePresence
+} = require("../middleware/fileValidation");
+
 const {
   productIdParamValidator,
   createProductValidator,
@@ -25,6 +32,9 @@ router.post(
   "/",
   authMiddleware,
   adminMiddleware,
+  upload.single("image"),
+  handleFileUploadError,
+  validateFilePresence,
   createProductValidator,
   productController.createProduct
 );
@@ -32,6 +42,8 @@ router.put(
   "/:id",
   authMiddleware,
   adminMiddleware,
+  upload.single("image"),
+  handleFileUploadError,
   productIdParamValidator,
   updateProductValidator,
   productController.updateProduct
