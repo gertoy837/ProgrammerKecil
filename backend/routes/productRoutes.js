@@ -9,7 +9,8 @@ const { upload } = require("../config/multer");
 
 const {
   handleFileUploadError,
-  validateFilePresence
+  validateFilePresence,
+  validateFilePresenceOptional
 } = require("../middleware/fileValidation");
 
 const {
@@ -45,6 +46,7 @@ router.put(
   upload.single("image"),
   handleFileUploadError,
   productIdParamValidator,
+  validateFilePresenceOptional,
   updateProductValidator,
   productController.updateProduct
 );

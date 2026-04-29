@@ -40,8 +40,9 @@ const handleFileUploadError = (err, req, res, next) => {
 
 
 /**
- * Middleware untuk validasi upload field presence
+ * Middleware untuk validasi upload field presence (WAJIB)
  * Memastikan file ada sebelum proses lanjut
+ * Gunakan untuk: CREATE product/category
  */
 const validateFilePresence = (req, res, next) => {
   if (!req.file) {
@@ -54,9 +55,21 @@ const validateFilePresence = (req, res, next) => {
   next();
 };
 
+/**
+ * Middleware untuk validasi upload field presence (OPSIONAL)
+ * File boleh tidak ada (untuk update tanpa mengubah image)
+ * Gunakan untuk: UPDATE product/category
+ */
+const validateFilePresenceOptional = (req, res, next) => {
+  // File adalah opsional, jadi langsung lanjut
+  // Jika ada error dari multer, handleFileUploadError akan menanganinya
+  next();
+};
+
 module.exports = {
   handleFileUploadError,
-  validateFilePresence
+  validateFilePresence,
+  validateFilePresenceOptional
   // validateFileSize,
   // validateFileType
 };

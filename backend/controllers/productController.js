@@ -40,17 +40,34 @@ exports.createProduct = async (req, res) => {
   try {
     const imagePath = req.file ? req.file.path : null;
 
+    if (!imagePath) {
+      return res.status(400).json({
+        status: false,
+        message: "File gambar harus disertakan saat membuat produk",
+        code: "NO_IMAGE_PROVIDED",
+      });
+    }
+
     const id = await dataStore.createProduct({
       ...req.body,
       image: imagePath,
     });
 
     res.status(201).json({
+      status: true,
       message: "Produk berhasil dibuat",
       productId: id,
+      fileInfo: {
+        filename: req.file.filename,
+        size: req.file.size,
+        path: imagePath,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
   }
 };
 
@@ -59,7 +76,10 @@ exports.updateProduct = async (req, res) => {
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id)) {
-      return res.status(400).json({ message: "Invalid product id" });
+      return res.status(400).json({
+        status: false,
+        message: "Invalid product id",
+      });
     }
 
     const imagePath = req.file ? req.file.path : undefined;
@@ -70,12 +90,32 @@ exports.updateProduct = async (req, res) => {
     });
 
     if (!success) {
-      return res.status(404).json({ message: "Produk tidak ditemukan" });
+      return res.status(404).json({
+        status: false,
+        message: "Produk tidak ditemukan",
+      });
     }
 
-    res.json({ message: "Produk berhasil diupdate" });
+    const responseData = {
+      status: true,
+      message: "Produk berhasil diupdate",
+    };
+
+    // Include file info jika ada file yang di-upload
+    if (req.file) {
+      responseData.fileInfo = {
+        filename: req.file.filename,
+        size: req.file.size,
+        path: imagePath,
+      };
+    }
+
+    res.json(responseData);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
   }
 };
 
