@@ -33,13 +33,14 @@ async function getCategoryById(id) {
 /**
  * Create a new category
  * @param {string} name - Category name
+ * @param {string} image - Category image filename
  * @returns {Promise<number>} ID of created category
  */
-async function createCategory(name) {
+async function createCategory(name, image) {
   await ensureDatabaseReady();
   return executeInsert(
-    "INSERT INTO categories (name) VALUES (?)",
-    [name]
+    "INSERT INTO categories (name, image) VALUES (?, ?)",
+    [name, image]
   );
 }
 
@@ -47,13 +48,14 @@ async function createCategory(name) {
  * Update a category
  * @param {number} id - Category ID
  * @param {string} name - New category name
+ * @param {string} image - New category image filename
  * @returns {Promise<boolean>} True if category was updated
  */
-async function updateCategory(id, name) {
+async function updateCategory(id, name, image) {
   await ensureDatabaseReady();
   return executeModify(
-    "UPDATE categories SET name = ? WHERE id = ?",
-    [name, id]
+    "UPDATE categories SET name = ? image = ? WHERE id = ?",
+    [name, image, id]
   );
 }
 

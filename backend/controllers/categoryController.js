@@ -12,12 +12,13 @@ exports.getCategories = async (req, res) => {
 exports.createCategory = async (req, res) => {
   try {
     const { name } = req.body;
-
-    const id = await dataStore.createCategory(name);
+    const image = req.file ? req.file.filename : null;
+    const id = await dataStore.createCategory(name, image);
 
     res.status(201).json({
       message: "Kategori berhasil dibuat",
       id,
+      image,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -28,8 +29,8 @@ exports.updateCategory = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { name } = req.body;
-
-    const success = await dataStore.updateCategory(id, name);
+    const image = req.file ? req.file.filename : undefined;
+    const success = await dataStore.updateCategory(id, name, image);
 
     if (!success) {
       return res.status(404).json({ message: "Kategori tidak ditemukan" });
