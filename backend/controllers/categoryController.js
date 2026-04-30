@@ -1,4 +1,5 @@
 const dataStore = require("../models/dataStore");
+const { deleteFileIfExists } = require("../lib/fileHelper");
 
 exports.getCategories = async (req, res) => {
   try {
@@ -29,30 +30,45 @@ exports.updateCategory = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { name } = req.body;
-    const image = req.file ? req.file.filename : undefined;
-    const success = await dataStore.updateCategory(id, name, image);
 
-    if (!success) {
+    const category = await dataStore.getCategoryById(id);
+
+    if (!category) {
       return res.status(404).json({ message: "Kategori tidak ditemukan" });
     }
 
+    const image = req.file ? req.file.filename : undefined;
+
+    if (req.file && category.image) {
+      deleteFileIfExists(`uploads/categories/${category.image}`);
+    }
+
+    await dataStore.updateCategory(id, name, image);
+
     res.json({ message: "Kategori berhasil diupdate" });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 exports.deleteCategory = async (req, res) => {
   try {
     const id = Number(req.params.id);
 
-    const success = await dataStore.deleteCategory(id);
+    const category = await dataStore.getCategoryById(id);
 
-    if (!success) {
+    if (!category) {
       return res.status(404).json({ message: "Kategori tidak ditemukan" });
     }
 
+    if (category.image) {
+      deleteFileIfExists(`uploads/categories/${category.image}`);
+    }
+
+    await dataStore.deleteCategory(id);
+
     res.json({ message: "Kategori berhasil dihapus" });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
