@@ -1,4 +1,5 @@
 const dataStore = require("../models/dataStore");
+const { deleteFileIfExists } = require("../lib/fileHelper");
 
 exports.getAllProducts = async (req, res) => {
   try {
@@ -82,35 +83,44 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
-    const imagePath = req.file ? req.file.path : undefined;
+    const product = await dataStore.getProductById(id);
 
-    const success = await dataStore.updateProduct(id, {
-      ...req.body,
-      ...(imagePath && { image: imagePath }),
-    });
-
-    if (!success) {
+    if (!product) {
       return res.status(404).json({
         status: false,
         message: "Produk tidak ditemukan",
       });
     }
 
+    const updateData = {
+      ...req.body,
+    };
+
+    if (req.file) {
+      updateData.image = req.file.path;
+
+      if (product.image) {
+        deleteFileIfExists(product.image);
+      }
+    }
+
+    await dataStore.updateProduct(id, updateData);
+
     const responseData = {
       status: true,
       message: "Produk berhasil diupdate",
     };
 
-    // Include file info jika ada file yang di-upload
     if (req.file) {
       responseData.fileInfo = {
         filename: req.file.filename,
         size: req.file.size,
-        path: imagePath,
+        path: req.file.path,
       };
     }
 
     res.json(responseData);
+
   } catch (error) {
     res.status(500).json({
       status: false,
@@ -127,13 +137,18 @@ exports.deleteProduct = async (req, res) => {
       return res.status(400).json({ message: "Invalid product id" });
     }
 
-    const success = await dataStore.deleteProduct(id);
+    const product = await dataStore.getProductById(id);
 
-    if (!success) {
+    if (!product) {
       return res.status(404).json({ message: "Produk tidak ditemukan" });
     }
 
+    deleteFileIfExists(product.image);
+
+    const success = await dataStore.deleteProduct(id);
+
     res.json({ message: "Produk berhasil dihapus" });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
