@@ -53,9 +53,27 @@ async function createCategory(name, image) {
  */
 async function updateCategory(id, name, image) {
   await ensureDatabaseReady();
+
+  const updates = [];
+  const values = [];
+
+  if (name !== undefined) {
+    updates.push("name = ?");
+    values.push(name);
+  }
+
+  if (image !== undefined) {
+    updates.push("image = ?");
+    values.push(image);
+  }
+
+  if (updates.length === 0) {
+    return false;
+  }
+
   return executeModify(
-    "UPDATE categories SET name = ? image = ? WHERE id = ?",
-    [name, image, id]
+    `UPDATE categories SET ${updates.join(", ")} WHERE id = ?`,
+    [...values, id]
   );
 }
 

@@ -13,7 +13,7 @@ exports.getCategories = async (req, res) => {
 exports.createCategory = async (req, res) => {
   try {
     const { name } = req.body;
-    const image = req.file ? req.file.filename : null;
+    const image = req.file ? req.file.path : null;
     const id = await dataStore.createCategory(name, image);
 
     res.status(201).json({
@@ -37,10 +37,10 @@ exports.updateCategory = async (req, res) => {
       return res.status(404).json({ message: "Kategori tidak ditemukan" });
     }
 
-    const image = req.file ? req.file.filename : undefined;
+    const image = req.file ? req.file.path : undefined;
 
     if (req.file && category.image) {
-      deleteFileIfExists(`uploads/categories/${category.image}`);
+      deleteFileIfExists(category.image);
     }
 
     await dataStore.updateCategory(id, name, image);
@@ -62,7 +62,7 @@ exports.deleteCategory = async (req, res) => {
     }
 
     if (category.image) {
-      deleteFileIfExists(`uploads/categories/${category.image}`);
+      deleteFileIfExists(category.image);
     }
 
     await dataStore.deleteCategory(id);

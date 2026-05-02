@@ -17,13 +17,13 @@ const categoriesDir = path.join(uploadsDir, "categories");
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Determine destination based on route or req.body
+    // Determine destination based on mounted route
     let uploadDir = productsDir;
-    
-    if (req.path.includes("categories")) {
+
+    if (req.baseUrl && req.baseUrl.includes("/categories")) {
       uploadDir = categoriesDir;
     }
-    
+
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {

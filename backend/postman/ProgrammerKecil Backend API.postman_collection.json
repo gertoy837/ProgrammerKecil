@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "8aa8f26f-b4d6-4da1-b67f-b8a9e5ef4fd8",
     "name": "ProgrammerKecil Backend API",
-    "description": "Collection API backend yang sudah sinkron dengan routes terbaru (auth, admin, products, categories, cart).",
+    "description": "Collection API backend yang sudah sinkron dengan routes terbaru (auth, admin, products, categories, cart) dan file upload multipart/form-data.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -311,22 +311,65 @@
           }
         },
         {
-          "name": "Create",
+          "name": "Create (Multipart Upload)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "if (json.productId) pm.environment.set('product_id', String(json.productId));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
                 "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Mouse Wireless\",\n  \"price\": 150000,\n  \"stock\": 10,\n  \"description\": \"Mouse wireless ergonomis\",\n  \"categoryId\": {{category_id}}\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Mouse Wireless",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "150000",
+                  "type": "text"
+                },
+                {
+                  "key": "stock",
+                  "value": "10",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Mouse wireless ergonomis",
+                  "type": "text"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "{{category_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/products",
@@ -340,22 +383,52 @@
           }
         },
         {
-          "name": "Update",
+          "name": "Update (Multipart Optional Image)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
               {
                 "key": "Authorization",
                 "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Mouse Wireless Pro\",\n  \"price\": 175000,\n  \"stock\": 8\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Mouse Wireless Pro",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "175000",
+                  "type": "text"
+                },
+                {
+                  "key": "stock",
+                  "value": "8",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/products/{{product_id}}",
@@ -459,22 +532,45 @@
           }
         },
         {
-          "name": "Create",
+          "name": "Create (Multipart Upload)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "if (json.id) pm.environment.set('category_id', String(json.id));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
                 "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Aksesoris\"\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Aksesoris",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/categories",
@@ -488,22 +584,42 @@
           }
         },
         {
-          "name": "Update",
+          "name": "Update (Multipart Optional Image)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
               {
                 "key": "Authorization",
                 "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Elektronik\"\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Elektronik",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/categories/{{category_id}}",

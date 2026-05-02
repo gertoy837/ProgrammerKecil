@@ -108,10 +108,19 @@ async function initializeDatabase() {
     CREATE TABLE IF NOT EXISTS categories (
       id INT NOT NULL AUTO_INCREMENT,
       name VARCHAR(191) NOT NULL,
+      image VARCHAR(191) NULL,
       PRIMARY KEY (id),
       UNIQUE KEY unique_category_name (name)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `);
+
+  try {
+    await pool.query("ALTER TABLE categories ADD COLUMN image VARCHAR(191) NULL AFTER name");
+  } catch (error) {
+    if (!error || error.code !== "ER_DUP_FIELDNAME") {
+      throw error;
+    }
+  }
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
