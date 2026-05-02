@@ -341,22 +341,22 @@
               "formdata": [
                 {
                   "key": "name",
-                  "value": "Mouse Wireless",
+                  "value": "Ikan Cupang Halfmoon",
                   "type": "text"
                 },
                 {
                   "key": "price",
-                  "value": "150000",
+                  "value": "50000",
                   "type": "text"
                 },
                 {
                   "key": "stock",
-                  "value": "10",
+                  "value": "20",
                   "type": "text"
                 },
                 {
                   "key": "description",
-                  "value": "Mouse wireless ergonomis",
+                  "value": "Ikan cupang Halfmoon warna merah, sehat dan aktif",
                   "type": "text"
                 },
                 {
@@ -410,17 +410,17 @@
               "formdata": [
                 {
                   "key": "name",
-                  "value": "Mouse Wireless Pro",
+                  "value": "Ikan Cupang Halfmoon Premium",
                   "type": "text"
                 },
                 {
                   "key": "price",
-                  "value": "175000",
+                  "value": "75000",
                   "type": "text"
                 },
                 {
                   "key": "stock",
-                  "value": "8",
+                  "value": "15",
                   "type": "text"
                 },
                 {
@@ -480,7 +480,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"review\": \"Produk bagus dan sesuai deskripsi\",\n  \"rating\": 5\n}"
+              "raw": "{\n  \"review\": \"Ikan sehat, warna cerah dan aktif berenang\",\n  \"rating\": 5\n}"
             },
             "url": {
               "raw": "{{base_url}}/products/{{product_id}}/reviews",
@@ -562,7 +562,7 @@
               "formdata": [
                 {
                   "key": "name",
-                  "value": "Aksesoris",
+                  "value": "Ikan Cupang",
                   "type": "text"
                 },
                 {
@@ -611,7 +611,7 @@
               "formdata": [
                 {
                   "key": "name",
-                  "value": "Elektronik",
+                  "value": "Aksesoris Cupang",
                   "type": "text"
                 },
                 {

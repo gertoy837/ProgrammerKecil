@@ -1,13 +1,28 @@
-const { ensureDatabaseReady } = require("../lib/db");
-const {
-  executeQuery,
-  executeQueryOne,
-  executeInsert,
-  executeModify,
-  getAll,
-  getById,
-  deleteById,
-} = require("./queryHelper");
+const { ensureDatabaseReady, getPool } = require("../lib/db");
+
+// Local query helpers (replaces ./queryHelper usage)
+async function executeQuery(sql, params = []) {
+  const pool = getPool();
+  const [rows] = await pool.query(sql, params);
+  return rows;
+}
+
+async function executeQueryOne(sql, params = []) {
+  const rows = await executeQuery(sql, params);
+  return rows.length > 0 ? rows[0] : null;
+}
+
+async function executeInsert(sql, params = []) {
+  const pool = getPool();
+  const [result] = await pool.query(sql, params);
+  return result.insertId;
+}
+
+async function executeModify(sql, params = []) {
+  const pool = getPool();
+  const [result] = await pool.query(sql, params);
+  return result.affectedRows > 0;
+}
 
 const TABLE = "categories";
 
@@ -17,7 +32,8 @@ const TABLE = "categories";
  */
 async function listCategories() {
   await ensureDatabaseReady();
-  return getAll(TABLE, { orderBy: "id ASC" });
+  const sql = `SELECT id, name, image FROM ${TABLE} ORDER BY id ASC`;
+  return executeQuery(sql);
 }
 
 /**
@@ -27,7 +43,7 @@ async function listCategories() {
  */
 async function getCategoryById(id) {
   await ensureDatabaseReady();
-  return getById(TABLE, id);
+  return executeQueryOne(`SELECT * FROM ${TABLE} WHERE id = ? LIMIT 1`, [id]);
 }
 
 /**
@@ -84,7 +100,7 @@ async function updateCategory(id, name, image) {
  */
 async function deleteCategory(id) {
   await ensureDatabaseReady();
-  return deleteById(TABLE, id);
+  return executeModify(`DELETE FROM ${TABLE} WHERE id = ?`, [id]);
 }
 
 module.exports = {
