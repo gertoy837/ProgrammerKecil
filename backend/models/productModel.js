@@ -1,4 +1,5 @@
 const { ensureDatabaseReady, getPool } = require("../lib/db");
+const { toPublicUploadPath } = require("../lib/fileHelper");
 
 // Local query helpers (replaces ./queryHelper usage)
 async function executeQuery(sql, params = []) {
@@ -47,7 +48,7 @@ function mapProductRow(row) {
     price: row.price,
     stock: row.stock,
     description: row.description,
-    image: row.image,
+    image: toPublicUploadPath(row.image),
     categoryId: row.categoryId,
     category: row.categoryId
       ? { id: row.categoryId, name: row.categoryName }

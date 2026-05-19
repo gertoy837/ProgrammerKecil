@@ -81,9 +81,10 @@ DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(191) NOT NULL,
+  `image` varchar(191) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_category_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,7 +93,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (2,'Accessories'),(3,'Aksesoris'),(1,'Elektronik');
+INSERT INTO `categories` VALUES (1,'Elektronik','D:\\Kuliah\\Semester 4\\ProgrammerKecil\\backend\\uploads\\categories\\1777551985992-2613.png'),(2,'Accessories',NULL),(3,'Aksesoris',NULL),(5,'Mamalia Langka','D:\\Kuliah\\Semester 4\\ProgrammerKecil\\backend\\uploads\\categories\\1777551972647-3999.jpg');
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -114,7 +115,7 @@ CREATE TABLE `products` (
   PRIMARY KEY (`id`),
   KEY `idx_products_category_id` (`categoryId`),
   CONSTRAINT `fk_products_category` FOREIGN KEY (`categoryId`) REFERENCES `categories` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -123,7 +124,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (2,'Mechanical Keyboard',899000,8,'Keyboard mekanikal dengan layout compact.',NULL,2),(3,'Mouse Wireless',150000,10,'Mouse wireless ergonomis',NULL,1);
+INSERT INTO `products` VALUES (1,'Mouse Wireless Pro',175000,8,'Headphones nirkabel dengan noise isolation.','D:\\Kuliah\\Semester 4\\ProgrammerKecil\\backend\\uploads\\products\\1777551932205-7556.png',1),(2,'Mechanical Keyboard',899000,8,'Keyboard mekanikal dengan layout compact.',NULL,2),(3,'Mouse Wireless',150000,10,'Mouse wireless ergonomis',NULL,1),(4,'Mouse Wireless',150000,10,'Mouse wireless ergonomis','D:\\Kuliah\\Semester 4\\ProgrammerKecil\\backend\\uploads\\products\\1777551917136-9164.jpg',1);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -198,4 +199,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-23 13:47:03
+-- Dump completed on 2026-05-02 12:29:13

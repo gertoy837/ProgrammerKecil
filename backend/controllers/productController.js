@@ -1,5 +1,5 @@
 const dataStore = require("../models/dataStore");
-const { deleteFileIfExists } = require("../lib/fileHelper");
+const { deleteFileIfExists, normalizeForStorage } = require("../lib/fileHelper");
 
 exports.getAllProducts = async (req, res) => {
   try {
@@ -39,7 +39,7 @@ exports.getProductById = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    const imagePath = req.file ? req.file.path : null;
+    const imagePath = req.file ? normalizeForStorage(req.file.path) : null;
 
     if (!imagePath) {
       return res.status(400).json({
@@ -97,7 +97,7 @@ exports.updateProduct = async (req, res) => {
     };
 
     if (req.file) {
-      updateData.image = req.file.path;
+      updateData.image = normalizeForStorage(req.file.path);
 
       if (product.image) {
         deleteFileIfExists(product.image);
@@ -115,7 +115,7 @@ exports.updateProduct = async (req, res) => {
       responseData.fileInfo = {
         filename: req.file.filename,
         size: req.file.size,
-        path: req.file.path,
+        path: updateData.image,
       };
     }
 

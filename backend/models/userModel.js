@@ -5,7 +5,7 @@ function toPublicUser(user) {
   return publicUser;
 }
 
-async function registerUser({ name, email, password, role = "user" }) {
+async function registerUser({ name, email, password }) {
   await ensureDatabaseReady();
 
   if (!name || !email || !password) {
@@ -26,7 +26,7 @@ async function registerUser({ name, email, password, role = "user" }) {
   const hash = await hashPassword(password);
   const [result] = await pool.query(
     `INSERT INTO users (name, email, passwordHash, salt, role) VALUES (?, ?, ?, ?, ?)`,
-    [String(name), normalizedEmail, hash, "bcrypt", role === "admin" ? "admin" : "user"]
+    [String(name), normalizedEmail, hash, "bcrypt", "user"]
   );
 
   return {
@@ -36,7 +36,7 @@ async function registerUser({ name, email, password, role = "user" }) {
       email: normalizedEmail,
       passwordHash: hash,
       salt: "bcrypt",
-      role: role === "admin" ? "admin" : "user",
+      role: "user",
       createdAt: new Date().toISOString(),
     }),
   };
