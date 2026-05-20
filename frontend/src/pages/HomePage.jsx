@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useCart } from "../contexts/CartContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -10,6 +14,7 @@ const categories = [
 
 const products = [
   {
+    id: 1,
     title: "Royal Red Halfmoon",
     price: "$45.00",
     rating: "4.9",
@@ -19,6 +24,7 @@ const products = [
       "https://lh3.googleusercontent.com/aida-public/AB6AXuDgHSznfBrQNQYJh6fHiiySWtWptJWnOykXK5Pg3JDz--_OcG1UL2pt2FrRYPs2CXNr4r6-rnekUOgyuSlzI5AKMmoaefYW0LRKLu3odKQKXA8xw7aPeaZpHcDj7xTs2XpZGKXhIKRKCwhKmF70YeRAlir7bpxQY-kHhi2VKvBx3XYXT9EZ-jUxWXYHSdsRspOxejx9Tvmwre-JEL1jaSpzRD3wR1C5lmprY1oMVct4UEi5DNtAZLLE0Nu5ZC55jUgIcGB73CNLEw",
   },
   {
+    id: 2,
     title: "Galaxy Koi Plakat",
     price: "$78.00",
     rating: "5.0",
@@ -28,6 +34,7 @@ const products = [
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBZ5o3FEmGDvg1XSLRl8mbgkpq5jYoBbwH9OLepDEMhBz8nni4mT6EDgF-Qb1vJxjAptq6t6bAY6dYXq-GEr6vjhso4pZKoj4uqedEHqON5a0ACOG2NNdEWb8B845iFfL46atLX8r8-N3c16mRXTSCcEe0Yz3FzJdhLx_v6bFt4lJNUQoqTk03XHFFonGvZKFpJoFPOOpP83xrUWTR6a8PJlxpdNm6PCaEDUdlmvzJrburHLddAUzDzwUAz0zTuLkR2Pw1_vTvphg",
   },
   {
+    id: 3,
     title: "Midnight Crowntail",
     price: "$32.00",
     rating: "4.8",
@@ -40,6 +47,7 @@ const products = [
 
 const recommendations = [
   {
+    id: 4,
     title: "Super Gold Halfmoon",
     price: "$120.00",
     rating: "5.0",
@@ -47,6 +55,7 @@ const recommendations = [
       "https://lh3.googleusercontent.com/aida-public/AB6AXuCpbOUhkg4csU9enkSEubyEdk6Rr5_K4tma5sbn-u-fDhXxFBgVcNzlT4utX-lM1D4VE9D0IXEK6IkccvSyEZUo-UaVSf3pSQzjz9FFU9oI06nntgjn-EziM_U6xp1O7G62u0_S2hHqbekUjlSdEXapBGzQ2IRRnGGkaFN0_nn0HdWkvAMGlKg7w0zKtx_XyKnepI10r53BJEPHJZdZPriEZTkL5L05yT6TC3DOs5-dDObzExlsOo_ZUQNdTstuqK5G7Zy4jPfVlA",
   },
   {
+    id: 5,
     title: "Platinum Plakat",
     price: "$85.00",
     rating: "4.9",
@@ -54,6 +63,7 @@ const recommendations = [
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAAs8T7VrAfAMy1DMezkclsvMGHKTPfPERZ515cm3ueUX_fXymL36YgjhP_529o2eDzOb_lZtxoOF1Wfea0C2pzYpWu466qxtosVC7i1BHMIxqT3T81snPrGX37bSNWTqtOvc8D7ZlcgNtu20A89d16OacLaL1ft27xuA52BzmLym0tRNrxOnLdtT1v4AkQcNKe445bZIeO2m-ILe-P5_G52mJntr7cGiERULCiEE2wn1dmEYbE13It1c9P78cAoLWasSJdAuRSHA",
   },
   {
+    id: 6,
     title: "Fancy Marble",
     price: "$95.00",
     rating: "4.7",
@@ -61,6 +71,7 @@ const recommendations = [
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBOUAZ3EGq4ghIKCqs-eOchfHlzsJw3CdlivGjYNbPBNVGm12kCKMkY-tanEmsWOzNcv_0QL9iUZu9LrUCT6clvS0SJdESOO1AxxfqkppRqcBxAeu1bfK__CLHOMqk8bmFm8BEE8TMiiWekuDJOyMm9IyFau2G4k__TpREdIkdVfhRIDnCbryO9EGhx1MRmax9n4IhOtXDq5VWa1038Qlbm1wcSsf-cK7kVIZIN2qlA2uQKPwrhDEWDrhFg3ZKTHfmc_Ku1NESw2Q",
   },
   {
+    id: 7,
     title: "Black Orchid Crowntail",
     price: "$65.00",
     rating: "5.0",
@@ -80,8 +91,42 @@ function ProductBadge({ children, className = "" }) {
 }
 
 export default function HomePage() {
+  const { user } = useAuth();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const [notification, setNotification] = useState(null);
+  const [addingToCart, setAddingToCart] = useState(null);
+
+  const handleAddToCart = async (productId, productTitle) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    setAddingToCart(productId);
+    const result = await addToCart(productId, 1);
+    setAddingToCart(null);
+
+    if (result.success) {
+      setNotification({ type: "success", message: `${productTitle} ditambahkan ke cart!` });
+      setTimeout(() => setNotification(null), 3000);
+    } else {
+      setNotification({ type: "error", message: result.error || "Gagal menambahkan ke cart" });
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
   return (
     <div className="min-h-screen text-[#191c1e]">
+      {notification && (
+        <div
+          className={`fixed top-24 left-1/2 -translate-x-1/2 z-40 px-6 py-3 rounded-lg shadow-lg text-white transition-all ${
+            notification.type === "success" ? "bg-green-500" : "bg-red-500"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
       <Navbar />
 
       <header id="home" className="relative flex h-150 items-center justify-center overflow-hidden">
@@ -220,9 +265,11 @@ export default function HomePage() {
                     <div className="flex gap-3">
                       <button
                         type="button"
-                        className="flex-1 rounded-2xl border border-[#c7c4d7]/50 py-3 text-sm font-semibold text-[#191c1e] transition-colors hover:bg-[#f2f4f6]"
+                        onClick={() => handleAddToCart(product.id, product.title)}
+                        disabled={addingToCart === product.id}
+                        className="flex-1 rounded-2xl border border-[#c7c4d7]/50 py-3 text-sm font-semibold text-[#191c1e] transition-colors hover:bg-[#f2f4f6] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Add to Cart
+                        {addingToCart === product.id ? "Adding..." : "Add to Cart"}
                       </button>
                       <button
                         type="button"
@@ -295,8 +342,13 @@ export default function HomePage() {
                     </span>
                     <span className="text-sm font-semibold text-[#12101a]">{item.rating}</span>
                   </div>
-                  <button type="button" className="w-full rounded-2xl bg-[#2d3133] py-3 text-sm font-semibold text-white transition-colors hover:bg-black">
-                    Add to cart
+                  <button
+                    type="button"
+                    onClick={() => handleAddToCart(item.id, item.title)}
+                    disabled={addingToCart === item.id}
+                    className="w-full rounded-2xl bg-[#2d3133] py-3 text-sm font-semibold text-white transition-colors hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {addingToCart === item.id ? "Adding..." : "Add to cart"}
                   </button>
                 </div>
               </article>
