@@ -6,7 +6,7 @@ export default function CartPage() {
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [fetchCart]);
 
   if (loading) return <div className="p-8">Loading cart...</div>;
 
