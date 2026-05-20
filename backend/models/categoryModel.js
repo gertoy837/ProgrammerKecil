@@ -1,4 +1,5 @@
 const { ensureDatabaseReady, getPool } = require("../lib/db");
+const { toPublicUploadPath } = require("../lib/fileHelper");
 
 // Local query helpers (replaces ./queryHelper usage)
 async function executeQuery(sql, params = []) {
@@ -33,7 +34,11 @@ const TABLE = "categories";
 async function listCategories() {
   await ensureDatabaseReady();
   const sql = `SELECT id, name, image FROM ${TABLE} ORDER BY id ASC`;
-  return executeQuery(sql);
+  const rows = await executeQuery(sql);
+  return rows.map((row) => ({
+    ...row,
+    image: toPublicUploadPath(row.image),
+  }));
 }
 
 /**
@@ -43,7 +48,16 @@ async function listCategories() {
  */
 async function getCategoryById(id) {
   await ensureDatabaseReady();
-  return executeQueryOne(`SELECT * FROM ${TABLE} WHERE id = ? LIMIT 1`, [id]);
+  const row = await executeQueryOne(`SELECT * FROM ${TABLE} WHERE id = ? LIMIT 1`, [id]);
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    ...row,
+    image: toPublicUploadPath(row.image),
+  };
 }
 
 /**

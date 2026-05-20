@@ -40,8 +40,8 @@ const storage = multer.diskStorage({
 // Configure file filter for validation
 const fileFilter = (req, file, cb) => {
   // Allowed file types
-  const allowedMimes = ["image/jpeg", "image/png", "image/gif", "image/jpg", "application/pdf"];
-  const allowedExts = [".jpg", ".jpeg", ".png", ".gif", ".pdf"];
+  const allowedMimes = ["image/jpeg", "image/png", "image/gif", "image/jpg", "image/webp"];
+  const allowedExts = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
   
   const ext = path.extname(file.originalname).toLowerCase();
   

@@ -1,5 +1,5 @@
 const dataStore = require("../models/dataStore");
-const { deleteFileIfExists } = require("../lib/fileHelper");
+const { deleteFileIfExists, normalizeForStorage } = require("../lib/fileHelper");
 
 exports.getCategories = async (req, res) => {
   try {
@@ -13,7 +13,7 @@ exports.getCategories = async (req, res) => {
 exports.createCategory = async (req, res) => {
   try {
     const { name } = req.body;
-    const image = req.file ? req.file.path : null;
+    const image = req.file ? normalizeForStorage(req.file.path) : null;
     const id = await dataStore.createCategory(name, image);
 
     res.status(201).json({
@@ -37,7 +37,7 @@ exports.updateCategory = async (req, res) => {
       return res.status(404).json({ message: "Kategori tidak ditemukan" });
     }
 
-    const image = req.file ? req.file.path : undefined;
+    const image = req.file ? normalizeForStorage(req.file.path) : undefined;
 
     if (req.file && category.image) {
       deleteFileIfExists(category.image);
