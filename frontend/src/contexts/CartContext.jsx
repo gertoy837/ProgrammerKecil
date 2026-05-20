@@ -1,13 +1,20 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useCallback } from "react";
 import apiClient from "../utils/api";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
+  const { user } = useAuth();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
+    if (!user) {
+      setCart(null);
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await apiClient.get("/cart/me");
@@ -17,7 +24,11 @@ export function CartProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   const addToCart = async (productId, quantity = 1) => {
     try {
@@ -61,7 +72,7 @@ export function CartProvider({ children }) {
   const clearCart = async () => {
     try {
       await apiClient.delete("/cart/clear");
-      setCart(null);
+      setCart({ id: null, userId: user?.id ?? null, items: [], totalPrice: 0 });
       return { success: true };
     } catch (error) {
       return {
