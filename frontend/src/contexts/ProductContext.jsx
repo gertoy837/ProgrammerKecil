@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useCallback } from "react";
 import apiClient from "../utils/api";
 
 const ProductContext = createContext();
@@ -9,7 +9,7 @@ export function ProductProvider({ children }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchAllProducts = async () => {
+  const fetchAllProducts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await apiClient.get("/products");
@@ -21,9 +21,9 @@ export function ProductProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchProductById = async (id) => {
+  const fetchProductById = useCallback(async (id) => {
     try {
       setLoading(true);
       const response = await apiClient.get(`/products/${id}`);
@@ -35,9 +35,9 @@ export function ProductProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await apiClient.get("/categories");
       setCategories(response.data.categories);
@@ -46,7 +46,7 @@ export function ProductProvider({ children }) {
       console.error("Error fetching categories:", error);
       return [];
     }
-  };
+  }, []);
 
   const addReview = async (productId, review, rating) => {
     try {
