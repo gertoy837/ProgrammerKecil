@@ -9,6 +9,11 @@ const apiClient = axios.create({
   },
 });
 
+export const getCartForUser = async (userId) => {
+  const endpoint = userId ? `/cart/${userId}` : "/cart/me";
+  return apiClient.get(endpoint);
+};
+
 // Add JWT token to requests if available
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
