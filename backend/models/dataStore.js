@@ -38,6 +38,7 @@ module.exports = {
   addReview,  
   addToCart,
   authenticateUser,
+  registerUser,
   ensureDatabaseReady,
   getCartForUser,
   getProductById,

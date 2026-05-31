@@ -174,7 +174,7 @@ export default function HomePage() {
                 type="button"
                 className="absolute right-2 rounded-xl bg-[#2d3133] px-6 py-2 text-sm font-bold text-white transition-colors hover:bg-black"
               >
-                Search
+                
               </button>
             </div>
           </div>
