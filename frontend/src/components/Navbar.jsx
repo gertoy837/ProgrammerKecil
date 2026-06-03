@@ -10,6 +10,7 @@ export default function Navbar() {
   const location = useLocation();
   const dropdownRef = useRef(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-white/50 bg-white/70 shadow-sm backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-10">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-2 sm:px-5 py-4 md:px-10">
         <div className="flex items-center gap-10">
           <Link to="/" className="text-2xl font-extrabold tracking-tight text-[#4648d4]">
             BettaVerse
@@ -74,7 +75,10 @@ export default function Navbar() {
           <div className="relative" ref={dropdownRef}>
             <button
               type="button"
-              onClick={() => setIsUserMenuOpen((currentValue) => !currentValue)}
+              onClick={() => {
+              setIsUserMenuOpen((currentValue) => !currentValue);
+              setIsMobileMenuOpen(false);
+            }}
               className="flex items-center gap-2 rounded-full border border-transparent px-2 py-1 transition-transform hover:border-[#dfe3ea] hover:bg-white active:scale-95"
               aria-haspopup="menu"
               aria-expanded={isUserMenuOpen}
@@ -156,6 +160,22 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
+      {isMobileMenuOpen && (
+      <div className="absolute left-0 right-0 top-full flex flex-col border-b border-[#e8ebf2] bg-white px-6 py-4 shadow-xl lg:hidden">
+        <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#4648d4] border-b border-gray-50">
+          Home
+        </a>
+        <a href="#shop" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
+          Shop
+        </a>
+        <a href="#tips" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
+          Care Tips
+        </a>
+        <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4]">
+          About
+        </a>
+      </div>
+    )}
     </nav>
   );
 }
