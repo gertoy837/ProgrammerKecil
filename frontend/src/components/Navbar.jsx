@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
 
@@ -7,6 +7,7 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const { cart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const dropdownRef = useRef(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,34 +37,28 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-white/50 bg-white/70 shadow-sm backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-2 sm:px-5 py-4 md:px-10">
         <div className="flex items-center gap-10">
-          <button
-            type="button"
-            onClick={() => {
-              setIsMobileMenuOpen((curr) => !curr);
-              setIsUserMenuOpen(false); 
-            }}
-            className="flex items-center justify-center rounded-lg p-1 text-[#464554] hover:bg-gray-100 lg:hidden active:scale-95"
-          >
-            <span className="material-symbols-outlined text-[28px]">
-              {isMobileMenuOpen ? "close" : "menu"}
-            </span>
-          </button>
-          <a href="#home" className="text-2xl font-extrabold tracking-tight text-[#4648d4]">
+          <Link to="/" className="text-2xl font-extrabold tracking-tight text-[#4648d4]">
             BettaVerse
-          </a>
-          <div className="hidden items-center gap-8 lg:flex">
-            <a href="#home" className="border-b-2 border-[#4648d4] pb-1 font-semibold text-[#4648d4]">
+          </Link>
+          <div className="hidden items-center gap-8 md:flex">
+            <Link 
+              to="/" 
+              className={`pb-1 font-semibold ${location.pathname === '/' ? 'border-b-2 border-[#4648d4] text-[#4648d4]' : 'text-[#464554] transition-colors hover:text-[#4648d4]'}`}
+            >
               Home
-            </a>
-            <a href="#shop" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
+            </Link>
+            <Link 
+              to="/products" 
+              className={`pb-1 font-semibold ${location.pathname.startsWith('/products') ? 'border-b-2 border-[#4648d4] text-[#4648d4]' : 'text-[#464554] transition-colors hover:text-[#4648d4]'}`}
+            >
               Shop
-            </a>
-            <a href="#tips" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
+            </Link>
+            <Link to="/#tips" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
               Care Tips
-            </a>
-            <a href="#about" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
+            </Link>
+            <Link to="/#about" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
               About
-            </a>
+            </Link>
           </div>
         </div>
 
