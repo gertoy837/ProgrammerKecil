@@ -63,14 +63,6 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4 md:gap-6">
-          <div className="hidden items-center rounded-full border border-[#dfe3ea] bg-white px-4 py-2 lg:flex">
-            <span className="material-symbols-outlined mr-2 text-[#767586]">search</span>
-            <input
-              type="text"
-              placeholder="Search your Betta..."
-              className="w-48 border-none bg-transparent text-sm outline-none"
-            />
-          </div>
 
           <div className="relative" ref={dropdownRef}>
             <button

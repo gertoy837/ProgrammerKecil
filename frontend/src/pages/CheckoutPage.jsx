@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function CheckoutPage() {
   const { user } = useAuth();
@@ -17,40 +19,47 @@ export default function CheckoutPage() {
     maximumFractionDigits: 0,
   });
 
+  const apiHost = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
   const formatPrice = (value) => currencyFormatter.format(Number(value || 0));
 
   if (!user) {
     return (
-      <div className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4 py-12 text-center">
-        <div className="rounded-4xl border border-slate-100 bg-white p-8 shadow-sm md:p-12">
-          <span className="material-symbols-outlined mb-4 text-5xl text-[#4648d4]">lock</span>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Checkout requires login</h1>
-          <p className="mt-3 text-sm leading-6 text-slate-500">
-            Silakan login terlebih dahulu untuk melanjutkan ke halaman pembayaran.
-          </p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => navigate("/login")}
-              className="rounded-full bg-[#4648d4] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#3b3dbb]"
-            >
-              Login
-            </button>
-            <Link
-              to="/cart"
-              className="rounded-full border border-slate-200 px-6 py-3 text-sm font-bold text-slate-700 transition-colors hover:border-[#4648d4] hover:text-[#4648d4]"
-            >
-              Back to Cart
-            </Link>
+      <div className="min-h-screen bg-slate-50 text-slate-800 antialiased flex flex-col font-sans">
+        <Navbar />
+        <main className="mx-auto flex flex-1 w-full max-w-3xl items-center justify-center px-4 py-12 text-center">
+          <div className="rounded-4xl border border-slate-100 bg-white p-8 shadow-sm md:p-12 w-full">
+            <span className="material-symbols-outlined mb-4 text-5xl text-[#4648d4]">lock</span>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Checkout requires login</h1>
+            <p className="mt-3 text-sm leading-6 text-slate-500">
+              Silakan login terlebih dahulu untuk melanjutkan ke halaman pembayaran.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => navigate("/login")}
+                className="rounded-full bg-[#4648d4] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#3b3dbb]"
+              >
+                Login
+              </button>
+              <Link
+                to="/cart"
+                className="rounded-full border border-slate-200 px-6 py-3 text-sm font-bold text-slate-700 transition-colors hover:border-[#4648d4] hover:text-[#4648d4]"
+              >
+                Back to Cart
+              </Link>
+            </div>
           </div>
-        </div>
+        </main>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 md:px-10">
-      <div className="mb-8 rounded-4xl border border-white/60 bg-white p-8 shadow-sm">
+    <div className="min-h-screen bg-slate-50 text-slate-800 antialiased flex flex-col">
+      <Navbar />
+      <main className="mx-auto max-w-7xl px-4 py-10 md:px-10 flex-1 w-full">
+        <div className="mb-8 rounded-4xl border border-white/60 bg-white p-8 shadow-sm">
         <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#767586]">Checkout</p>
         <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-slate-900">Review & Payment</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
@@ -75,25 +84,45 @@ export default function CheckoutPage() {
               </Link>
             </div>
           ) : (
-            cartItems.map((item) => (
-              <article key={item.id} className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#767586]">
-                      {item.product?.categoryName || "Betta Fish"}
-                    </p>
-                    <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900">
-                      {item.product?.name || "Unknown Product"}
-                    </h2>
-                    <p className="mt-2 text-sm text-slate-500">Qty {item.quantity}</p>
+            cartItems.map((item) => {
+              const imageUrl = item.product?.image ? `${apiHost}${item.product.image}` : null;
+              
+              return (
+                <article key={item.id} className="rounded-[28px] border border-slate-100 bg-white p-4 shadow-sm">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      {/* Thumbnail Image */}
+                      <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-slate-100">
+                        {imageUrl ? (
+                          <img
+                            src={imageUrl}
+                            alt={item.product?.name || "Cart item"}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="material-symbols-outlined text-3xl text-slate-300">image_not_supported</span>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#767586]">
+                          {item.product?.categoryName || "Betta Fish"}
+                        </p>
+                        <h2 className="mt-1 text-lg font-extrabold tracking-tight text-slate-900 line-clamp-1">
+                          {item.product?.name || "Unknown Product"}
+                        </h2>
+                        <p className="mt-1 text-sm font-semibold text-slate-500">Qty {item.quantity}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-right">
+                      <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#767586]">Subtotal</p>
+                      <p className="mt-1 text-xl font-extrabold text-[#4648d4]">{formatPrice(item.subtotal)}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#767586]">Subtotal</p>
-                    <p className="mt-1 text-xl font-extrabold text-[#4648d4]">{formatPrice(item.subtotal)}</p>
-                  </div>
-                </div>
-              </article>
-            ))
+                </article>
+              );
+            })
           )}
         </section>
 
@@ -130,6 +159,8 @@ export default function CheckoutPage() {
           </Link>
         </aside>
       </div>
+      </main>
+      <Footer />
     </div>
   );
 }
