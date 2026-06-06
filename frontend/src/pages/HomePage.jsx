@@ -112,6 +112,7 @@ export default function HomePage() {
           </p>
           <button
             type="button"
+            onClick={() => navigate('/products')}
             className="mt-8 rounded-full bg-[#4648d4] px-10 py-4 text-sm font-bold text-white shadow-xl transition-all hover:-translate-y-1 hover:bg-[#2f2ebe]"
           >
             Explore The Collection
@@ -150,6 +151,7 @@ export default function HomePage() {
               <div className="space-y-2">
                     <button
                       type="button"
+                      onClick={() => navigate('/products')}
                       className="flex w-full items-center justify-between rounded-2xl bg-[#4648d4]/10 p-4 font-bold text-[#4648d4]"
                     >
                       <span className="flex items-center gap-3">
@@ -162,15 +164,16 @@ export default function HomePage() {
                       {categories.map((category) => {
                         const count = products.filter(p => p.category?.name === category.name).length;
                         return (
-                          <a
+                          <button
                             key={category.name}
-                            href="#"
-                            className="flex items-center gap-3 rounded-xl p-3 text-[#464554] transition-colors hover:text-[#4648d4]"
+                            type="button"
+                            onClick={() => navigate(`/products?category=${encodeURIComponent(category.name)}`)}
+                            className="flex w-full items-center gap-3 rounded-xl p-3 text-left text-[#464554] transition-colors hover:text-[#4648d4]"
                           >
                             <span className="material-symbols-outlined text-[20px]">{category.icon}</span>
-                            {category.name}
+                            <span className="truncate">{category.name}</span>
                             <span className="ml-auto text-xs bg-[#4648d4]/20 px-2 py-0.5 rounded">{count}</span>
-                          </a>
+                          </button>
                         );
                       })}
                     </div>
@@ -205,7 +208,9 @@ export default function HomePage() {
                   key={product.id}
                   className="group overflow-hidden rounded-4xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)]"
                 >
-                  <div className="relative m-3 aspect-4/5 overflow-hidden rounded-3xl bg-[#f2f4f6]">
+                  <div
+                    className="relative m-3 aspect-4/5 overflow-hidden rounded-3xl bg-[#f2f4f6]"
+                  >
                     <div className="absolute right-4 top-4 z-10">
                       <ProductBadge className={product.category?.name === "Rare" ? "bg-[#6b38d4] text-white" : "bg-white/90 text-[#191c1e]"}>
                         {product.category?.name || ""}
@@ -214,12 +219,18 @@ export default function HomePage() {
                     <img
                       alt={product.name}
                       src={product.image}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      onClick={() => navigate(`/products/${product.id}`)}
+                      className="h-full w-full cursor-pointer object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   </div>
                   <div className="px-6 pb-6 pt-2 text-left">
                     <div className="mb-2 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-[#12101a]">{product.name}</h4>
+                      <h4
+                        className="text-lg font-semibold text-[#12101a] cursor-pointer"
+                        onClick={() => navigate(`/products/${product.id}`)}
+                      >
+                        {product.name}
+                      </h4>
                       <span className="font-bold text-[#4648d4]">Rp {(product.price || 0).toLocaleString("id-ID")}</span>
                     </div>
                     <div className="mb-6 flex items-center gap-1">
@@ -240,6 +251,7 @@ export default function HomePage() {
                       </button>
                       <button
                         type="button"
+                        onClick={() => navigate(`/products/${product.id}`)}
                         className="flex-1 rounded-2xl bg-[#2d3133] py-3 text-sm font-semibold text-white transition-colors hover:bg-black"
                       >
                         Buy Now

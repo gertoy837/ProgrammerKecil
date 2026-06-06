@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useProduct } from "../contexts/ProductContext";
 import { useCart } from "../contexts/CartContext";
 import { useAuth } from "../contexts/AuthContext";
@@ -11,6 +11,7 @@ export default function ProductListPage() {
   const { addToCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // State Dinamis untuk Search, Filter, Sorting, dan Pagination
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,6 +27,15 @@ export default function ProductListPage() {
   useEffect(() => {
     fetchAllProducts();
   }, [fetchAllProducts]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const cat = params.get("category");
+    if (cat) {
+      setSelectedCategory(decodeURIComponent(cat));
+      setCurrentPage(1);
+    }
+  }, [location.search]);
 
   const handleAddToCart = async (productId, productTitle) => {
     if (!user) {
