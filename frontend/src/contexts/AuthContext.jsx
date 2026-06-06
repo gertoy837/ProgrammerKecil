@@ -12,31 +12,52 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
-    
+
     if (savedToken && savedUser) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
     }
-    
+
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     try {
       const response = await apiClient.post("/auth/login", { email, password });
-      const { token, user } = response.data;
-      
+
+      const { token, user, message } = response.data;
+
+      if (!token || !user) {
+        return {
+          success: false,
+          error: message || "Email atau password salah",
+        };
+      }
+
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      
+
       setToken(token);
       setUser(user);
-      
-      return { success: true, user };
+
+      return {
+        success: true,
+        user,
+      };
     } catch (error) {
+      const data = error.response?.data;
+
+      let errorMessage = "Email atau password salah";
+
+      if (Array.isArray(data?.errors)) {
+        errorMessage = data.errors.map((err) => err.message).join("\n");
+      } else if (data?.message) {
+        errorMessage = data.message;
+      }
+
       return {
         success: false,
-        error: error.response?.data?.message || "Login failed",
+        error: errorMessage,
       };
     }
   };
@@ -49,13 +70,13 @@ export function AuthProvider({ children }) {
         password,
       });
       const { token, user } = response.data;
-      
+
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      
+
       setToken(token);
       setUser(user);
-      
+
       return { success: true, user };
     } catch (error) {
       return {
@@ -73,7 +94,9 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ user, token, loading, login, register, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
