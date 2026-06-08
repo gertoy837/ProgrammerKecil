@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -30,7 +32,7 @@ export default function LoginPage() {
     setLoading(false);
 
     // Redirect hanya kalau benar-benar berhasil
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (
@@ -165,15 +167,46 @@ export default function LoginPage() {
               >
                 {loading ? "Memproses..." : "Masuk"}
               </button>
-              <span className="text-sm text-center block text-[#64748b] transition-colors">
+
+              <span className="text-sm text-center block text-[#64748b] transition-colors pt-2">
                 Belum punya akun?
-                <a
-                  href="/register"
-                  className="text-[#64748b] transition-colors hover:text-[#3b5af5] ml-1"
+                <Link
+                  to="/register"
+                  className="text-[#3b5af5] hover:underline ml-1 font-semibold"
                 >
                   Daftar di sini
-                </a>
+                </Link>
               </span>
+
+              {/* SEPARATOR GARIS HALUS */}
+              <div className="relative flex py-2 items-center">
+                <div className="flex-grow border-t border-gray-200"></div>
+                <span className="flex-shrink mx-4 text-gray-400 text-xs tracking-widest">ATAU</span>
+                <div className="flex-grow border-t border-gray-200"></div>
+              </div>
+
+              {/* TOMBOL KEMBALI KE BERANDA (DI BAWAH) */}
+              <Link
+                to="/"
+                className="group w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-[#64748b] border border-[#cbd5e1] hover:border-[#3b5af5] hover:text-[#3b5af5] bg-transparent hover:bg-[#3b5af5]/05 transition-all duration-200 text-sm"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                  className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-200"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+                  />
+                </svg>
+                Kembali ke Beranda
+              </Link>
+
             </form>
           </div>
         </div>

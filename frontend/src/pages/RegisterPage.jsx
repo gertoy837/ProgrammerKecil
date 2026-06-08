@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function RegisterPage() {
   const { register } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,7 +29,7 @@ export default function RegisterPage() {
     if (!result.success) {
       setError(result.error);
     } else {
-      window.location.href = "/";
+      navigate("/");
     }
 
     setLoading(false);
@@ -41,28 +43,31 @@ export default function RegisterPage() {
         fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif" 
       }}
     >
-      {/* MAIN CONTAINER */}
-      <div className="flex w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+      {/* CONTAINER UTAMA: Skala diturunkan ke max-w-5xl agar pas dan kompak */}
+      <div className="flex w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
         
-        {/* SISI KIRI: Gambar */}
-        <div className="hidden md:block md:w-1/2 relative bg-[#0a0e2e]">
+        {/* SISI KIRI: Proporsi 55% menjaga ikan tetap utuh dan megah */}
+        <div className="hidden md:block md:w-[55%] relative bg-[#0a0e2e]">
           <img 
             src={logoUrl} 
             alt="BettaVerse Showcase" 
-            className="w-full h-full object-cover opacity-90"
+            className="w-full h-full object-cover opacity-95"
           />
+          {/* Gradasi gelap di bagian bawah gambar agar teks terbaca */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e2e]/90 via-[#0a0e2e]/20 to-transparent" />
           
-          <div className="absolute bottom-12 left-0 right-0 text-center px-8">
-            <h1 className="text-3xl font-black tracking-tight mb-2 text-[#4b83ff]">BettaVerse</h1>
+          <div className="absolute bottom-10 left-0 right-0 text-center px-8">
+            <h1 className="text-3xl font-black tracking-tight mb-1 text-[#4b83ff]">
+              BettaVerse
+            </h1>
             <p className="text-xs text-[#8aa8d8] tracking-wide uppercase">
               Join the Elite Betta Community
             </p>
           </div>
         </div>
 
-        {/* SISI KANAN: Form Register */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+        {/* SISI KANAN: Proporsi 45% untuk layout form yang solid */}
+        <div className="w-full md:w-[45%] p-6 md:p-10 flex flex-col justify-center">
           <div className="w-full max-w-sm mx-auto">
             
             {/* Header Form */}
@@ -72,10 +77,10 @@ export default function RegisterPage() {
                 alt="Logo" 
                 className="w-14 h-14 rounded-full object-cover mx-auto mb-4 md:hidden shadow-md border border-gray-100"
               />
-              <h2 className="tracking-tight text-3xl font-black text-[#0f1a4a]">
+              <h2 className="tracking-tight text-2xl font-black text-[#0f1a4a]">
                 Buat Akun Baru
               </h2>
-              <p className="mt-1.5 text-sm text-[#64748b]">
+              <p className="mt-1 text-sm text-[#64748b]">
                 Bergabunglah bersama kami hari ini
               </p>
             </div>
@@ -83,9 +88,15 @@ export default function RegisterPage() {
             {error && (
               <div 
                 className="p-3 rounded-lg mb-4 text-xs text-center border"
-                style={{ backgroundColor: "#fef2f2", borderColor: "#fca5a5", color: "#b91c1c" }}
+                style={{ 
+                  backgroundColor: "#fef2f2", 
+                  borderColor: "#fca5a5", 
+                  color: "#b91c1c" 
+                }}
               >
-                {error}
+                {error.split("\n").map((msg, index) => (
+                  <div key={index}>{msg}</div>
+                ))}
               </div>
             )}
 
@@ -98,9 +109,9 @@ export default function RegisterPage() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Nama Anda"
+                  placeholder="Nama Lengkap Anda"
                   className="w-full px-4 py-2.5 rounded-xl outline-none transition-all duration-200 border border-[#cbd5e1]"
-                  style={{ color: "#0f1a4a", fontSize: "0.9rem" }}
+                  style={{ color: "#0f1a4a", fontSize: "0.95rem" }}
                   onFocus={(e) => { 
                     e.target.style.borderColor = "#3b5af5"; 
                     e.target.style.boxShadow = "0 0 0 3px rgba(59, 90, 245, 0.08)";
@@ -123,7 +134,7 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="nama@email.com"
                   className="w-full px-4 py-2.5 rounded-xl outline-none transition-all duration-200 border border-[#cbd5e1]"
-                  style={{ color: "#0f1a4a", fontSize: "0.9rem" }}
+                  style={{ color: "#0f1a4a", fontSize: "0.95rem" }}
                   onFocus={(e) => { 
                     e.target.style.borderColor = "#3b5af5"; 
                     e.target.style.boxShadow = "0 0 0 3px rgba(59, 90, 245, 0.08)";
@@ -146,7 +157,7 @@ export default function RegisterPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full px-4 py-2.5 rounded-xl outline-none transition-all duration-200 border border-[#cbd5e1]"
-                  style={{ color: "#0f1a4a", fontSize: "0.9rem" }}
+                  style={{ color: "#0f1a4a", fontSize: "0.95rem" }}
                   onFocus={(e) => { 
                     e.target.style.borderColor = "#3b5af5"; 
                     e.target.style.boxShadow = "0 0 0 3px rgba(59, 90, 245, 0.08)";
@@ -169,7 +180,7 @@ export default function RegisterPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full px-4 py-2.5 rounded-xl outline-none transition-all duration-200 border border-[#cbd5e1]"
-                  style={{ color: "#0f1a4a", fontSize: "0.9rem" }}
+                  style={{ color: "#0f1a4a", fontSize: "0.95rem" }}
                   onFocus={(e) => { 
                     e.target.style.borderColor = "#3b5af5"; 
                     e.target.style.boxShadow = "0 0 0 3px rgba(59, 90, 245, 0.08)";
@@ -185,7 +196,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 mt-3 rounded-xl font-bold text-white transition-all duration-200"
+                className="w-full py-2.5 mt-2 rounded-xl font-bold text-white transition-all duration-200"
                 style={{
                   background: "#3b5af5", 
                   fontSize: "0.95rem",
@@ -198,6 +209,45 @@ export default function RegisterPage() {
               >
                 {loading ? "Mendaftar..." : "Daftar Sekarang"}
               </button>
+
+              <span className="text-xs text-center block text-[#64748b] transition-colors pt-1">
+                Sudah punya akun?
+                <Link
+                  to="/login"
+                  className="text-[#3b5af5] hover:underline ml-1 font-semibold"
+                >
+                  Masuk di sini
+                </Link>
+              </span>
+
+              {/* SEPARATOR GARIS HALUS */}
+              <div className="relative flex py-1 items-center">
+                <div className="flex-grow border-t border-gray-200"></div>
+                <span className="flex-shrink mx-3 text-gray-400 text-[10px] tracking-widest">ATAU</span>
+                <div className="flex-grow border-t border-gray-200"></div>
+              </div>
+
+              {/* TOMBOL KEMBALI KE BERANDA */}
+              <Link
+                to="/"
+                className="group w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-[#64748b] border border-[#cbd5e1] hover:border-[#3b5af5] hover:text-[#3b5af5] bg-transparent hover:bg-[#3b5af5]/05 transition-all duration-200 text-xs"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                  className="w-3.5 h-3.5 transform group-hover:-translate-x-1 transition-transform duration-200"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+                  />
+                </svg>
+                Kembali ke Beranda
+              </Link>
             </form>
 
           </div>
