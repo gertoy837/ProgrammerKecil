@@ -90,3 +90,15 @@ exports.clearCart = async (req, res) => {
   }
   res.json({ message: "Cart cleared successfully" });
 };
+
+exports.deleteCartItem = async (req, res) => {
+
+  const { id } = req.params;
+
+  await prisma.cartItem.delete({
+    where: { id: parseInt(id) }
+  });
+
+  res.json({ message: "Item deleted" });
+
+};
