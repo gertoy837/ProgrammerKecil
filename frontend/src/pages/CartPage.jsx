@@ -75,9 +75,9 @@ export default function CartPage() {
       <div className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4 py-12 text-center">
         <div className="rounded-4xl border border-slate-100 bg-white p-8 shadow-sm md:p-12">
           <span className="material-symbols-outlined mb-4 text-5xl text-[#4648d4]">shopping_cart</span>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Cart belum tersedia</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Your Cart is Locked</h1>
           <p className="mt-3 text-sm leading-6 text-slate-500">
-            Silakan login terlebih dahulu untuk melihat isi cart dan mengelola item yang sudah ditambahkan.
+            Please sign in first to view your cart items and manage your selection.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <button
@@ -178,7 +178,7 @@ export default function CartPage() {
           <span className="material-symbols-outlined mb-4 text-5xl text-slate-300">shopping_basket</span>
           <h2 className="text-2xl font-extrabold text-slate-900">Your cart is empty</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500">
-            Belum ada produk di keranjang. Jelajahi katalog lalu tambahkan item favoritmu ke cart.
+            Your cart is empty. Browse our collection and add your favorite Betta today!
           </p>
           <Link
             to="/products"
