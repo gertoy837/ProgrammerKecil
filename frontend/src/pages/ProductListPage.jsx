@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useProduct } from "../contexts/ProductContext";
 import { useCart } from "../contexts/CartContext";
 import { useAuth } from "../contexts/AuthContext";
@@ -11,6 +11,7 @@ export default function ProductListPage() {
   const { addToCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // State Dinamis untuk Search, Filter, Sorting, dan Pagination
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,6 +27,15 @@ export default function ProductListPage() {
   useEffect(() => {
     fetchAllProducts();
   }, [fetchAllProducts]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const cat = params.get("category");
+    if (cat) {
+      setSelectedCategory(decodeURIComponent(cat));
+      setCurrentPage(1);
+    }
+  }, [location.search]);
 
   const handleAddToCart = async (productId, productTitle) => {
     if (!user) {
@@ -256,8 +266,8 @@ export default function ProductListPage() {
                       >
                         <div>
                           {/* Image Wrapper */}
-                          <a
-                            href={`/products/${product.id}`}
+                          <Link
+                            to={`/products/${product.id}`}
                           >
                             <div className="relative aspect-square rounded-2xl overflow-hidden mb-4 bg-slate-50 flex items-center justify-center">
                               {imageUrl ? (
@@ -284,17 +294,17 @@ export default function ProductListPage() {
                                 </span>
                               )}
                             </div>
-                          </a>
+                          </Link>
 
                           {/* Detail Info */}
                           <div className="px-1">
                             <h3 className="text-base font-bold text-slate-850 mb-1 group-hover:text-[#4648d4] transition-colors capitalize tracking-wide">
-                              <a
-                                href={`/products/${product.id}`}
+                              <Link
+                                to={`/products/${product.id}`}
                                 className="hover:underline"
                               >
                                 {product.name}
-                              </a>
+                              </Link>
                             </h3>
                             <p className="text-xs text-slate-400 mb-4 line-clamp-2 leading-relaxed">
                               {product.description ||

@@ -1,84 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
+import { useProduct } from "../contexts/ProductContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-const categories = [
-  { name: "Halfmoon", icon: "water_drop" },
-  { name: "Plakat", icon: "waves" },
-  { name: "Crowntail", icon: "auto_awesome" },
-  { name: "Rosetail", icon: "filter_vintage" },
-];
-
-const products = [
-  {
-    id: 1,
-    title: "Royal Red Halfmoon",
-    price: "$45.00",
-    rating: "4.9",
-    reviews: "1.2k Reviews",
-    badge: "Halfmoon",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDgHSznfBrQNQYJh6fHiiySWtWptJWnOykXK5Pg3JDz--_OcG1UL2pt2FrRYPs2CXNr4r6-rnekUOgyuSlzI5AKMmoaefYW0LRKLu3odKQKXA8xw7aPeaZpHcDj7xTs2XpZGKXhIKRKCwhKmF70YeRAlir7bpxQY-kHhi2VKvBx3XYXT9EZ-jUxWXYHSdsRspOxejx9Tvmwre-JEL1jaSpzRD3wR1C5lmprY1oMVct4UEi5DNtAZLLE0Nu5ZC55jUgIcGB73CNLEw",
-  },
-  {
-    id: 2,
-    title: "Galaxy Koi Plakat",
-    price: "$78.00",
-    rating: "5.0",
-    reviews: "850 Reviews",
-    badge: "Rare",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBZ5o3FEmGDvg1XSLRl8mbgkpq5jYoBbwH9OLepDEMhBz8nni4mT6EDgF-Qb1vJxjAptq6t6bAY6dYXq-GEr6vjhso4pZKoj4uqedEHqON5a0ACOG2NNdEWb8B845iFfL46atLX8r8-N3c16mRXTSCcEe0Yz3FzJdhLx_v6bFt4lJNUQoqTk03XHFFonGvZKFpJoFPOOpP83xrUWTR6a8PJlxpdNm6PCaEDUdlmvzJrburHLddAUzDzwUAz0zTuLkR2Pw1_vTvphg",
-  },
-  {
-    id: 3,
-    title: "Midnight Crowntail",
-    price: "$32.00",
-    rating: "4.8",
-    reviews: "2.4k Reviews",
-    badge: "Crowntail",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuARvvv3SWJ3CGq102_yVrlu6EUuJkTXrSKRE7Oex3bPMb0nmHxVFX3woHpT89azioybSUyElkqnEUR05FMXkWPC0ulJVglVIUVk3wLvB4gkQcx4lk-2YMydwlZGrkB7HBGyAp-pv5z7ogj0zgWHD31-46qHMDCia8DWw3AY1aoNn7PA9F3ARUgg44JCFsYpzsaGYahReGcOMid61DRMtnhMsPljZRUT4DHpbRBx2BzI2Gos10SLOV6YHUXu1ezOrxu_Zqx8Kf4Jig",
-  },
-];
-
-const recommendations = [
-  {
-    id: 4,
-    title: "Super Gold Halfmoon",
-    price: "$120.00",
-    rating: "5.0",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCpbOUhkg4csU9enkSEubyEdk6Rr5_K4tma5sbn-u-fDhXxFBgVcNzlT4utX-lM1D4VE9D0IXEK6IkccvSyEZUo-UaVSf3pSQzjz9FFU9oI06nntgjn-EziM_U6xp1O7G62u0_S2hHqbekUjlSdEXapBGzQ2IRRnGGkaFN0_nn0HdWkvAMGlKg7w0zKtx_XyKnepI10r53BJEPHJZdZPriEZTkL5L05yT6TC3DOs5-dDObzExlsOo_ZUQNdTstuqK5G7Zy4jPfVlA",
-  },
-  {
-    id: 5,
-    title: "Platinum Plakat",
-    price: "$85.00",
-    rating: "4.9",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAAs8T7VrAfAMy1DMezkclsvMGHKTPfPERZ515cm3ueUX_fXymL36YgjhP_529o2eDzOb_lZtxoOF1Wfea0C2pzYpWu466qxtosVC7i1BHMIxqT3T81snPrGX37bSNWTqtOvc8D7ZlcgNtu20A89d16OacLaL1ft27xuA52BzmLym0tRNrxOnLdtT1v4AkQcNKe445bZIeO2m-ILe-P5_G52mJntr7cGiERULCiEE2wn1dmEYbE13It1c9P78cAoLWasSJdAuRSHA",
-  },
-  {
-    id: 6,
-    title: "Fancy Marble",
-    price: "$95.00",
-    rating: "4.7",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBOUAZ3EGq4ghIKCqs-eOchfHlzsJw3CdlivGjYNbPBNVGm12kCKMkY-tanEmsWOzNcv_0QL9iUZu9LrUCT6clvS0SJdESOO1AxxfqkppRqcBxAeu1bfK__CLHOMqk8bmFm8BEE8TMiiWekuDJOyMm9IyFau2G4k__TpREdIkdVfhRIDnCbryO9EGhx1MRmax9n4IhOtXDq5VWa1038Qlbm1wcSsf-cK7kVIZIN2qlA2uQKPwrhDEWDrhFg3ZKTHfmc_Ku1NESw2Q",
-  },
-  {
-    id: 7,
-    title: "Black Orchid Crowntail",
-    price: "$65.00",
-    rating: "5.0",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCjb3ijvInuKhvczOEx6uzOTqF9zvIroQAsmqqvjn1diphyHrLA7SIRLOHkjiVJOo3V0M6hgqTP_ZjsBsaRn-ssiAyl-mfmL594cRzVzSTV7-tqsAeZGx6y-E_yzN5eQRbt66a2FcHiYQlnQK8hmqy0AchvPcurZsJLE_kmWstCo3k52VlUVrqvKYa_BzKFhPmI6XxDvel6Y_w6vJlCTW9zV8e0D4XlaKjKufLIAEjBoswZG9fi6YYDqMjKGUQ8b7NEBLDw81_ntA",
-  },
-];
+// Data will be fetched from backend via ProductContext
+// categories, products, and recommendations are derived from the fetched list.
 
 function ProductBadge({ children, className = "" }) {
   return (
@@ -94,8 +23,30 @@ export default function HomePage() {
   const { user } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const { products, loading, fetchAllProducts } = useProduct();
   const [notification, setNotification] = useState(null);
   const [addingToCart, setAddingToCart] = useState(null);
+
+  // Fetch products once when component mounts
+  useEffect(() => {
+    fetchAllProducts();
+  }, [fetchAllProducts]);
+
+  // Derive unique categories from fetched products and assign icons
+  const categories = useMemo(() => {
+    const raw = products.map((p) => p.category?.name).filter(Boolean);
+    const uniq = [...new Set(raw)];
+    const iconMap = {
+      Halfmoon: "water_drop",
+      Plakat: "waves",
+      Crowntail: "auto_awesome",
+      Rosetail: "filter_vintage",
+    };
+    return uniq.map((name) => ({ name, icon: iconMap[name] || "category" }));
+  }, [products]);
+
+  // Simple recommendation list – take first 4 products (could be replaced with a smarter algorithm)
+  const recommendations = useMemo(() => products.slice(0, 4), [products]);
 
   const handleAddToCart = async (productId, productTitle) => {
     if (!user) {
@@ -115,6 +66,18 @@ export default function HomePage() {
       setTimeout(() => setNotification(null), 3000);
     }
   };
+
+  // Show loading spinner while fetching products
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-slate-50">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-[#4648d4] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-sm font-semibold text-slate-500 animate-pulse">Loading BettaVerse catalogue...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-[#191c1e]">
@@ -149,6 +112,7 @@ export default function HomePage() {
           </p>
           <button
             type="button"
+            onClick={() => navigate('/products')}
             className="mt-8 rounded-full bg-[#4648d4] px-10 py-4 text-sm font-bold text-white shadow-xl transition-all hover:-translate-y-1 hover:bg-[#2f2ebe]"
           >
             Explore The Collection
@@ -174,7 +138,7 @@ export default function HomePage() {
                 type="button"
                 className="absolute right-2 rounded-xl bg-[#2d3133] px-6 py-2 text-sm font-bold text-white transition-colors hover:bg-black"
               >
-                Search
+                
               </button>
             </div>
           </div>
@@ -185,29 +149,35 @@ export default function HomePage() {
             <div className="rounded-[28px] bg-white p-6 shadow-sm">
               <h3 className="mb-6 text-2xl font-semibold text-[#12101a]">Category</h3>
               <div className="space-y-2">
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-between rounded-2xl bg-[#4648d4]/10 p-4 font-bold text-[#4648d4]"
-                >
-                  <span className="flex items-center gap-3">
-                    <span className="material-symbols-outlined">inventory_2</span>
-                    All Product
-                  </span>
-                  <span className="rounded-full bg-[#4648d4] px-2 py-0.5 text-xs text-white">82</span>
-                </button>
-                <div className="pl-4">
-                  {categories.map((category) => (
-                    <a
-                      key={category.name}
-                      href="#"
-                      className="flex items-center gap-3 rounded-xl p-3 text-[#464554] transition-colors hover:text-[#4648d4]"
+                    <button
+                      type="button"
+                      onClick={() => navigate('/products')}
+                      className="flex w-full items-center justify-between rounded-2xl bg-[#4648d4]/10 p-4 font-bold text-[#4648d4]"
                     >
-                      <span className="material-symbols-outlined text-[20px]">{category.icon}</span>
-                      {category.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
+                      <span className="flex items-center gap-3">
+                        <span className="material-symbols-outlined">inventory_2</span>
+                        All Product
+                      </span>
+                      <span className="rounded-full bg-[#4648d4] px-2 py-0.5 text-xs text-white">{products.length}</span>
+                    </button>
+                    <div className="pl-4">
+                      {categories.map((category) => {
+                        const count = products.filter(p => p.category?.name === category.name).length;
+                        return (
+                          <button
+                            key={category.name}
+                            type="button"
+                            onClick={() => navigate(`/products?category=${encodeURIComponent(category.name)}`)}
+                            className="flex w-full items-center gap-3 rounded-xl p-3 text-left text-[#464554] transition-colors hover:text-[#4648d4]"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">{category.icon}</span>
+                            <span className="truncate">{category.name}</span>
+                            <span className="ml-auto text-xs bg-[#4648d4]/20 px-2 py-0.5 rounded">{count}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
             </div>
 
             <div className="rounded-[28px] bg-white p-6 shadow-sm" id="tips">
@@ -235,37 +205,45 @@ export default function HomePage() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {products.map((product) => (
                 <article
-                  key={product.title}
+                  key={product.id}
                   className="group overflow-hidden rounded-4xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)]"
                 >
-                  <div className="relative m-3 aspect-4/5 overflow-hidden rounded-3xl bg-[#f2f4f6]">
+                  <div
+                    className="relative m-3 aspect-4/5 overflow-hidden rounded-3xl bg-[#f2f4f6]"
+                  >
                     <div className="absolute right-4 top-4 z-10">
-                      <ProductBadge className={product.badge === "Rare" ? "bg-[#6b38d4] text-white" : "bg-white/90 text-[#191c1e]"}>
-                        {product.badge}
+                      <ProductBadge className={product.category?.name === "Rare" ? "bg-[#6b38d4] text-white" : "bg-white/90 text-[#191c1e]"}>
+                        {product.category?.name || ""}
                       </ProductBadge>
                     </div>
                     <img
-                      alt={product.title}
+                      alt={product.name}
                       src={product.image}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      onClick={() => navigate(`/products/${product.id}`)}
+                      className="h-full w-full cursor-pointer object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   </div>
                   <div className="px-6 pb-6 pt-2 text-left">
                     <div className="mb-2 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-[#12101a]">{product.title}</h4>
-                      <span className="font-bold text-[#4648d4]">{product.price}</span>
+                      <h4
+                        className="text-lg font-semibold text-[#12101a] cursor-pointer"
+                        onClick={() => navigate(`/products/${product.id}`)}
+                      >
+                        {product.name}
+                      </h4>
+                      <span className="font-bold text-[#4648d4]">Rp {(product.price || 0).toLocaleString("id-ID")}</span>
                     </div>
                     <div className="mb-6 flex items-center gap-1">
                       <span className="material-symbols-outlined text-[18px] text-[#b90538]" style={{ fontVariationSettings: "'FILL' 1" }}>
                         star
                       </span>
-                      <span className="text-sm font-semibold text-[#12101a]">{product.rating}</span>
-                      <span className="text-xs text-[#767586]">({product.reviews})</span>
+                      <span className="text-sm font-semibold text-[#12101a]">{product.averageRating?.toFixed(1) || "-"}</span>
+                      <span className="text-xs text-[#767586]">({product.reviewCount || 0})</span>
                     </div>
                     <div className="flex gap-3">
                       <button
                         type="button"
-                        onClick={() => handleAddToCart(product.id, product.title)}
+                        onClick={() => handleAddToCart(product.id, product.name)}
                         disabled={addingToCart === product.id}
                         className="flex-1 rounded-2xl border border-[#c7c4d7]/50 py-3 text-sm font-semibold text-[#191c1e] transition-colors hover:bg-[#f2f4f6] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -273,6 +251,7 @@ export default function HomePage() {
                       </button>
                       <button
                         type="button"
+                        onClick={() => navigate(`/products/${product.id}`)}
                         className="flex-1 rounded-2xl bg-[#2d3133] py-3 text-sm font-semibold text-white transition-colors hover:bg-black"
                       >
                         Buy Now
@@ -327,24 +306,24 @@ export default function HomePage() {
 
           <div className="flex gap-6 overflow-x-auto pb-8">
             {recommendations.map((item) => (
-              <article key={item.title} className="min-w-80 snap-start rounded-4xl bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+              <article key={item.id} className="min-w-80 snap-start rounded-4xl bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                 <div className="mb-4 overflow-hidden rounded-3xl">
-                  <img alt={item.title} src={item.image} className="h-full w-full object-cover" />
+                  <img alt={item.name} src={item.image} className="h-full w-full object-cover" />
                 </div>
                 <div className="px-2 text-left">
                   <div className="mb-1 flex items-center justify-between">
-                    <h4 className="text-lg font-semibold text-[#12101a]">{item.title}</h4>
-                    <span className="font-bold text-[#4648d4]">{item.price}</span>
+                    <h4 className="text-lg font-semibold text-[#12101a]">{item.name}</h4>
+                    <span className="font-bold text-[#4648d4]">Rp {(item.price || 0).toLocaleString("id-ID")}</span>
                   </div>
                   <div className="mb-4 flex items-center gap-1">
                     <span className="material-symbols-outlined text-[16px] text-[#b90538]" style={{ fontVariationSettings: "'FILL' 1" }}>
                       star
                     </span>
-                    <span className="text-sm font-semibold text-[#12101a]">{item.rating}</span>
+                    <span className="text-sm font-semibold text-[#12101a]">{item.averageRating?.toFixed(1) || "-"}</span>
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleAddToCart(item.id, item.title)}
+                    onClick={() => handleAddToCart(item.id, item.name)}
                     disabled={addingToCart === item.id}
                     className="w-full rounded-2xl bg-[#2d3133] py-3 text-sm font-semibold text-white transition-colors hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
                   >

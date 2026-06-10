@@ -62,15 +62,18 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4 md:gap-6">
-          <div className="hidden items-center rounded-full border border-[#dfe3ea] bg-white px-4 py-2 lg:flex">
-            <span className="material-symbols-outlined mr-2 text-[#767586]">search</span>
-            <input
-              type="text"
-              placeholder="Search your Betta..."
-              className="w-48 border-none bg-transparent text-sm outline-none"
-            />
-          </div>
+        <div className="flex items-center gap-3 md:gap-6">
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((currentValue) => !currentValue)}
+            className="rounded-full border border-transparent p-2 transition-transform hover:border-[#dfe3ea] hover:bg-white active:scale-95 md:hidden"
+            aria-label="Toggle mobile menu"
+            aria-expanded={isMobileMenuOpen}
+          >
+            <span className="material-symbols-outlined text-[#464554]">
+              {isMobileMenuOpen ? "close" : "menu"}
+            </span>
+          </button>
 
           <div className="relative" ref={dropdownRef}>
             <button
@@ -162,18 +165,18 @@ export default function Navbar() {
       </div>
       {isMobileMenuOpen && (
       <div className="absolute left-0 right-0 top-full flex flex-col border-b border-[#e8ebf2] bg-white px-6 py-4 shadow-xl lg:hidden">
-        <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#4648d4] border-b border-gray-50">
+        <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#4648d4] border-b border-gray-50">
           Home
-        </a>
-        <a href="#shop" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
+        </Link>
+        <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
           Shop
-        </a>
-        <a href="#tips" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
+        </Link>
+        <Link to="/#tips" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
           Care Tips
-        </a>
-        <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4]">
+        </Link>
+        <Link to="/#about" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4]">
           About
-        </a>
+        </Link>
       </div>
     )}
     </nav>

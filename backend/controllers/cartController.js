@@ -91,19 +91,14 @@ exports.clearCart = async (req, res) => {
   res.json({ message: "Cart cleared successfully" });
 };
 
-exports.updateQuantity = async (req, res) => {
+exports.deleteCartItem = async (req, res) => {
 
   const { id } = req.params;
-  const { quantity } = req.body;
 
-  const updated = await prisma.cartItem.update({
-    where: { id: parseInt(id) },
-    data: { quantity }
+  await prisma.cartItem.delete({
+    where: { id: parseInt(id) }
   });
 
-  res.json({
-    message: "Cart updated",
-    updated
-  });
+  res.json({ message: "Item deleted" });
 
 };

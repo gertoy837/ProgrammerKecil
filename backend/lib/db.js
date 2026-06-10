@@ -145,6 +145,9 @@ async function initializeDatabase() {
       description TEXT NOT NULL,
       image VARCHAR(191) NULL,
       categoryId INT NOT NULL,
+      filename VARCHAR(255) NULL,       
+      filepath VARCHAR(255) NULL,        
+      filesize INT NULL,
       PRIMARY KEY (id),
       KEY idx_products_category_id (categoryId),
       CONSTRAINT fk_products_category
