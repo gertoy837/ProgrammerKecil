@@ -96,19 +96,14 @@ export default function CartPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-50 text-slate-800 antialiased flex flex-col font-sans">
+      <>
         <Navbar />
-        <main className="mx-auto flex flex-1 w-full max-w-3xl items-center justify-center px-4 py-12 text-center">
-          <div className="rounded-4xl border border-slate-100 bg-white p-8 shadow-sm md:p-12 w-full">
-            <span className="material-symbols-outlined mb-4 text-5xl text-[#4648d4]">
-              shopping_cart
-            </span>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
-              Cart belum tersedia
-            </h1>
+        <div className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4 py-12 text-center">
+          <div className="rounded-4xl border border-slate-100 bg-white p-8 shadow-sm md:p-12">
+            <span className="material-symbols-outlined mb-4 text-5xl text-[#4648d4]">shopping_cart</span>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Your Cart is Locked</h1>
             <p className="mt-3 text-sm leading-6 text-slate-500">
-              Silakan login terlebih dahulu untuk melihat isi cart dan mengelola
-              item yang sudah ditambahkan.
+              Please sign in first to view your cart items and manage your selection.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <button
@@ -126,9 +121,9 @@ export default function CartPage() {
               </Link>
             </div>
           </div>
-        </main>
+        </div>
         <Footer />
-      </div>
+      </>
     );
   }
 
@@ -219,15 +214,10 @@ export default function CartPage() {
 
         {!cartItems.length ? (
           <div className="rounded-4xl border border-dashed border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-            <span className="material-symbols-outlined mb-4 text-5xl text-slate-300">
-              shopping_basket
-            </span>
-            <h2 className="text-2xl font-extrabold text-slate-900">
-              Your cart is empty
-            </h2>
+            <span className="material-symbols-outlined mb-4 text-5xl text-slate-300">shopping_basket</span>
+            <h2 className="text-2xl font-extrabold text-slate-900">Your cart is empty</h2>
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500">
-              Belum ada produk di keranjang. Jelajahi katalog lalu tambahkan
-              item favoritmu ke cart.
+              Your cart is empty. Browse our collection and add your favorite Betta today!
             </p>
             <Link
               to="/products"
@@ -240,15 +230,10 @@ export default function CartPage() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
             <section className="space-y-4">
               {cartItems.map((item) => {
-                const imageUrl = item.product?.image
-                  ? `${apiHost}${item.product.image}`
-                  : null;
+                const imageUrl = item.product?.image ? `${apiHost}${item.product.image}` : null;
 
                 return (
-                  <article
-                    key={item.id}
-                    className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-sm"
-                  >
+                  <article key={item.id} className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-sm">
                     <div className="flex flex-col gap-5 md:flex-row md:items-center">
                       <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-slate-100">
                         {imageUrl ? (
@@ -258,39 +243,27 @@ export default function CartPage() {
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <span className="material-symbols-outlined text-3xl text-slate-300">
-                            image_not_supported
-                          </span>
+                          <span className="material-symbols-outlined text-3xl text-slate-300">image_not_supported</span>
                         )}
                       </div>
 
                       <div className="flex-1">
                         <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
                           <div>
-                            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#767586]">
-                              {item.product?.categoryName || "Betta Fish"}
-                            </p>
+                            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#767586]">{item.product?.categoryName || "Betta Fish"}</p>
                             <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900">
-                              <a
-                                href={`/products/${item.product?.id}`}
-                                className="hover:underline"
-                              >
+                              <a href={`/products/${item.product?.id}`} className="hover:underline">
                                 {item.product?.name || "Unknown Product"}
                               </a>
                             </h2>
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                              {item.product?.description ||
-                                "Detail produk tidak tersedia."}
+                              {item.product?.description || "Detail produk tidak tersedia."}
                             </p>
                           </div>
 
                           <div className="text-left lg:text-right">
-                            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#767586]">
-                              Subtotal
-                            </p>
-                            <p className="mt-1 text-xl font-extrabold text-[#4648d4]">
-                              {formatPrice(item.subtotal)}
-                            </p>
+                            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#767586]">Subtotal</p>
+                            <p className="mt-1 text-xl font-extrabold text-[#4648d4]">{formatPrice(item.subtotal)}</p>
                           </div>
                         </div>
 
@@ -298,56 +271,36 @@ export default function CartPage() {
                           <div className="flex items-center gap-3 rounded-2xl bg-slate-50 px-3 py-2">
                             <button
                               type="button"
-                              onClick={() =>
-                                handleQuantityChange(
-                                  item,
-                                  Number(item.quantity || 1) - 1,
-                                )
-                              }
+                              onClick={() => handleQuantityChange(item, Number(item.quantity || 1) - 1)}
                               disabled={actionLoadingId === item.id}
                               className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-700 shadow-sm transition-colors hover:text-[#4648d4] disabled:cursor-not-allowed disabled:opacity-50"
                               aria-label="Decrease quantity"
                             >
-                              <span className="material-symbols-outlined text-[20px]">
-                                remove
-                              </span>
+                              <span className="material-symbols-outlined text-[20px]">remove</span>
                             </button>
 
-                            <div className="min-w-14 text-center text-sm font-bold text-slate-900">
-                              Qty {item.quantity}
-                            </div>
+                            <div className="min-w-14 text-center text-sm font-bold text-slate-900">Qty {item.quantity}</div>
 
                             <button
                               type="button"
-                              onClick={() =>
-                                handleQuantityChange(
-                                  item,
-                                  Number(item.quantity || 0) + 1,
-                                )
-                              }
+                              onClick={() => handleQuantityChange(item, Number(item.quantity || 0) + 1)}
                               disabled={actionLoadingId === item.id || item.quantity >= (item.product?.stock ?? 0)}
                               className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-700 shadow-sm transition-colors hover:text-[#4648d4] disabled:cursor-not-allowed disabled:opacity-50"
                               aria-label="Increase quantity"
                             >
-                              <span className="material-symbols-outlined text-[20px]">
-                                add
-                              </span>
+                              <span className="material-symbols-outlined text-[20px]">add</span>
                             </button>
                           </div>
 
                           <div className="flex flex-wrap items-center gap-3">
-                            <p className="text-sm font-semibold text-slate-500">
-                              {formatPrice(item.product?.price)}
-                            </p>
+                            <p className="text-sm font-semibold text-slate-500">{formatPrice(item.product?.price)}</p>
                             <button
                               type="button"
                               onClick={() => handleRemoveItem(item.id)}
                               disabled={actionLoadingId === item.id}
                               className="inline-flex items-center gap-2 rounded-full border border-red-200 px-4 py-2 text-sm font-bold text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                              <span className="material-symbols-outlined text-[18px]">
-                                delete
-                              </span>
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
                               Remove
                             </button>
                           </div>
@@ -360,12 +313,8 @@ export default function CartPage() {
             </section>
 
             <aside className="h-fit rounded-[28px] border border-slate-100 bg-white p-6 shadow-sm lg:sticky lg:top-24">
-              <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#767586]">
-                Summary
-              </p>
-              <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">
-                Order Overview
-              </h2>
+              <p className="text-xs font-bold uppercase tracking-[0.35em] text-[#767586]">Summary</p>
+              <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">Order Overview</h2>
 
               <div className="mt-6 space-y-4 rounded-3xl bg-slate-50 p-4">
                 <div className="flex items-center justify-between text-sm">
@@ -374,16 +323,12 @@ export default function CartPage() {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-slate-500">Distinct products</span>
-                  <span className="font-bold text-slate-900">
-                    {cartItems.length}
-                  </span>
+                  <span className="font-bold text-slate-900">{cartItems.length}</span>
                 </div>
                 <div className="h-px bg-slate-200" />
                 <div className="flex items-center justify-between text-base">
                   <span className="font-semibold text-slate-700">Total</span>
-                  <span className="text-2xl font-extrabold text-[#4648d4]">
-                    {formatPrice(cart?.totalPrice)}
-                  </span>
+                  <span className="text-2xl font-extrabold text-[#4648d4]">{formatPrice(cart?.totalPrice)}</span>
                 </div>
               </div>
 
@@ -393,9 +338,7 @@ export default function CartPage() {
                 disabled={clearingCart}
                 className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#191c1e] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <span className="material-symbols-outlined text-[18px]">
-                  delete_sweep
-                </span>
+                <span className="material-symbols-outlined text-[18px]">delete_sweep</span>
                 {clearingCart ? "Clearing..." : "Clear Cart"}
               </button>
 
@@ -403,9 +346,7 @@ export default function CartPage() {
                 to="/checkout"
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#4648d4] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#3b3dbb]"
               >
-                <span className="material-symbols-outlined text-[18px]">
-                  shopping_cart_checkout
-                </span>
+                <span className="material-symbols-outlined text-[18px]">shopping_cart_checkout</span>
                 Proceed to Checkout
               </Link>
             </aside>

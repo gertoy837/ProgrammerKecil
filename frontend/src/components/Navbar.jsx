@@ -98,7 +98,7 @@ export default function Navbar() {
                 <div className="border-b border-[#eef1f6] px-4 py-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8a8fa3]">User Menu</p>
                   <p className="mt-1 text-sm font-semibold text-[#1f2233]">{user ? user.name : "Guest"}</p>
-                  <p className="text-xs text-[#767586]">{user ? user.email : "Silakan login untuk akses penuh"}</p>
+                  <p className="text-xs text-[#767586]">{user ? user.email : "Please sign in for full access"}</p>
                 </div>
 
                 <div className="py-2 text-sm">
