@@ -48,6 +48,56 @@ export function ProductProvider({ children }) {
     }
   }, []);
 
+  const createProduct = useCallback(async (formData) => {
+    try {
+      const response = await apiClient.post("/products", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error.response?.data?.message || error.message ||
+          "Failed to create product",
+      };
+    }
+  }, []);
+
+  const updateProduct = useCallback(async (productId, formData) => {
+    try {
+      const response = await apiClient.put(`/products/${productId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error.response?.data?.message || error.message ||
+          "Failed to update product",
+      };
+    }
+  }, []);
+
+  const deleteProduct = useCallback(async (productId) => {
+    try {
+      await apiClient.delete(`/products/${productId}`);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error.response?.data?.message || error.message ||
+          "Failed to delete product",
+      };
+    }
+  }, []);
+
   const addReview = async (productId, review, rating) => {
     try {
       const response = await apiClient.post(`/products/${productId}/reviews`, {
@@ -74,6 +124,9 @@ export function ProductProvider({ children }) {
         fetchAllProducts,
         fetchProductById,
         fetchCategories,
+        createProduct,
+        updateProduct,
+        deleteProduct,
         addReview,
       }}
     >

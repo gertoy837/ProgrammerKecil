@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
-import apiClient from "../utils/api";
+import { useProduct } from "../contexts/ProductContext";
 
 export default function AdminCreateProductPage() {
   const navigate = useNavigate();
+  const { categories, fetchCategories, createProduct } = useProduct();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -13,19 +14,15 @@ export default function AdminCreateProductPage() {
 
   const [formData, setFormData] = useState({
     name: "",
-    category: "",
+    categoryId: "",
     price: "",
     stock: "",
     description: "",
   });
 
-  const categories = [
-    "Cupang",
-    "Aksesoris",
-    "Makanan",
-    "Obat",
-    "Dekorasi",
-  ];
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +69,7 @@ export default function AdminCreateProductPage() {
       // Validation
       if (
         !formData.name ||
-        !formData.category ||
+        !formData.categoryId ||
         !formData.price ||
         !formData.stock ||
         !formData.description ||
@@ -86,25 +83,23 @@ export default function AdminCreateProductPage() {
       // Create FormData for file upload
       const submitData = new FormData();
       submitData.append("name", formData.name);
-      submitData.append("category", formData.category);
+      submitData.append("categoryId", parseInt(formData.categoryId, 10));
       submitData.append("price", parseFloat(formData.price));
-      submitData.append("stock", parseInt(formData.stock));
+      submitData.append("stock", parseInt(formData.stock, 10));
       submitData.append("description", formData.description);
       submitData.append("image", imageFile);
 
-      // Submit to API
-      await apiClient.post("/products", submitData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const result = await createProduct(submitData);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       setSuccess(`Produk "${formData.name}" berhasil dibuat!`);
 
       // Reset form
       setFormData({
         name: "",
-        category: "",
+        categoryId: "",
         price: "",
         stock: "",
         description: "",
@@ -177,17 +172,23 @@ export default function AdminCreateProductPage() {
               Kategori <span className="text-red-500">*</span>
             </label>
             <select
-              name="category"
-              value={formData.category}
+              name="categoryId"
+              value={formData.categoryId}
               onChange={handleInputChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4648d4] focus:border-transparent outline-none transition"
             >
               <option value="">Pilih Kategori</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+              {categories?.length > 0 ? (
+                categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  Memuat kategori...
                 </option>
-              ))}
+              )}
             </select>
           </div>
 
