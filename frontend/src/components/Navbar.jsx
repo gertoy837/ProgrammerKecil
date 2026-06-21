@@ -47,7 +47,8 @@ export default function Navbar() {
             >
               Home
             </Link>
-            <Link 
+            {(!user || user.role !== "admin") && (<>
+            <Link   
               to="/products" 
               className={`pb-1 font-semibold ${location.pathname.startsWith('/products') ? 'border-b-2 border-[#4648d4] text-[#4648d4]' : 'text-[#464554] transition-colors hover:text-[#4648d4]'}`}
             >
@@ -58,7 +59,16 @@ export default function Navbar() {
             </Link>
             <Link to="/#about" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
               About
-            </Link>
+            </Link> </>)}
+            {/* Tambahan Menu Khusus Admin di Desktop */}
+              {user && user.role === "admin" && (
+                <Link 
+                  to="/admin/products/create" 
+                  className={`pb-1 font-bold ${location.pathname === '/admin/products/create' ? 'border-b-2 border-[#4648d4] text-[#4648d4]' : 'text-[#4648d4] bg-[#4648d4]/10 px-3 py-1 rounded-lg transition-all hover:bg-[#4648d4]/20'}`}
+                >
+                  + Create Product
+                </Link>
+              )}
           </div>
         </div>
 
@@ -178,6 +188,8 @@ export default function Navbar() {
         <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#4648d4] border-b border-gray-50">
           Home
         </Link>
+        {(!user || user.role !== "admin") && (
+      <>
         <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
           Shop
         </Link>
@@ -187,6 +199,14 @@ export default function Navbar() {
         <Link to="/#about" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4]">
           About
         </Link>
+        </>
+    )}
+          {/* Tambahan Menu Khusus Admin di Mobile */}
+          {user && user.role === "admin" && (
+            <Link to="/admin/products/create" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-bold text-[#4648d4]">
+              + Create Product
+            </Link>
+          )}
       </div>
     )}
     </nav>
