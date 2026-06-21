@@ -134,7 +134,26 @@ export default function Navbar() {
                     </>
                   ) : (
                     <>
-                      
+                      {user.role === "admin" && (
+                        <>
+                          <Link
+                            to="/admin/products"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2 text-[#464554] transition-colors hover:bg-[#f6f7fc] hover:text-[#4648d4]"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">inventory</span>
+                            Manage Products
+                          </Link>
+                          <Link
+                            to="/admin/products/create"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2 text-[#464554] transition-colors hover:bg-[#f6f7fc] hover:text-[#4648d4]"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">add_box</span>
+                            Create Product
+                          </Link>
+                        </>
+                      )}
                       <button
                         type="button"
                         onClick={handleLogout}
