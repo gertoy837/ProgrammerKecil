@@ -14,6 +14,7 @@ const {
   deleteItem,
   deleteItemForUser,
   clearCart,
+  checkoutCart,
 } = require("./cartModel");
 
 const {
@@ -59,5 +60,6 @@ module.exports = {
   updateQuantityForUser,
   deleteItem,
   deleteItemForUser,
-  clearCart
+  clearCart,
+  checkoutCart
 };

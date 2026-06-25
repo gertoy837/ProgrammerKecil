@@ -191,6 +191,42 @@ async function initializeDatabase() {
   `);
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id INT NOT NULL AUTO_INCREMENT,
+      userId INT NOT NULL,
+      totalPrice INT NOT NULL,
+      createdAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+      PRIMARY KEY (id),
+      KEY idx_orders_user_id (userId),
+      CONSTRAINT fk_orders_user
+        FOREIGN KEY (userId) REFERENCES users (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS order_items (
+      id INT NOT NULL AUTO_INCREMENT,
+      orderId INT NOT NULL,
+      productId INT NOT NULL,
+      quantity INT NOT NULL,
+      priceAtPurchase INT NOT NULL,
+      PRIMARY KEY (id),
+      KEY idx_order_items_order_id (orderId),
+      KEY idx_order_items_product_id (productId),
+      CONSTRAINT fk_order_items_order
+        FOREIGN KEY (orderId) REFERENCES orders (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+      CONSTRAINT fk_order_items_product
+        FOREIGN KEY (productId) REFERENCES products (id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `);
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS reviews (
       id INT NOT NULL AUTO_INCREMENT,
       userId INT NOT NULL,
