@@ -19,12 +19,8 @@ export default function Navbar() {
         setIsUserMenuOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = () => {
@@ -33,49 +29,54 @@ export default function Navbar() {
     navigate("/");
   };
 
+  const navLink = (to, label, exact = false) => {
+    const active = exact
+      ? location.pathname === to
+      : location.pathname.startsWith(to);
+    return (
+      <Link
+        to={to}
+        className={`pb-1 font-semibold transition-colors ${
+          active
+            ? "border-b-2 border-[#4648d4] text-[#4648d4]"
+            : "text-[#464554] hover:text-[#4648d4]"
+        }`}
+      >
+        {label}
+      </Link>
+    );
+  };
+
   return (
     <nav className="sticky top-0 z-50 border-b border-white/50 bg-white/70 shadow-sm backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-2 sm:px-5 py-4 md:px-10">
+
+        {/* ── Left: logo + desktop nav ── */}
         <div className="flex items-center gap-10">
           <Link to="/" className="text-2xl font-extrabold tracking-tight text-[#4648d4]">
             BettaVerse
           </Link>
+
+          {/* Desktop links */}
           <div className="hidden items-center gap-8 md:flex">
-            <Link 
-              to="/" 
-              className={`pb-1 font-semibold ${location.pathname === '/' ? 'border-b-2 border-[#4648d4] text-[#4648d4]' : 'text-[#464554] transition-colors hover:text-[#4648d4]'}`}
-            >
-              Home
-            </Link>
-            {(!user || user.role !== "admin") && (<>
-            <Link   
-              to="/products" 
-              className={`pb-1 font-semibold ${location.pathname.startsWith('/products') ? 'border-b-2 border-[#4648d4] text-[#4648d4]' : 'text-[#464554] transition-colors hover:text-[#4648d4]'}`}
-            >
-              Shop
-            </Link>
+            {navLink("/", "Home", true)}
+            {navLink("/products", "Shop")}
             <Link to="/#tips" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
               Care Tips
             </Link>
             <Link to="/#about" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
               About
-            </Link> </>)}
-            {/* Tambahan Menu Khusus Admin di Desktop */}
-              {user && user.role === "admin" && (
-                <Link 
-                  to="/admin/products/create" 
-                  className={`pb-1 font-bold ${location.pathname === '/admin/products/create' ? 'border-b-2 border-[#4648d4] text-[#4648d4]' : 'text-[#4648d4] bg-[#4648d4]/10 px-3 py-1 rounded-lg transition-all hover:bg-[#4648d4]/20'}`}
-                >
-                  + Create Product
-                </Link>
-              )}
+            </Link>
           </div>
         </div>
 
+        {/* ── Right: account + cart ── */}
         <div className="flex items-center gap-3 md:gap-6">
+
+          {/* Mobile hamburger */}
           <button
             type="button"
-            onClick={() => setIsMobileMenuOpen((currentValue) => !currentValue)}
+            onClick={() => setIsMobileMenuOpen((v) => !v)}
             className="rounded-full border border-transparent p-2 transition-transform hover:border-[#dfe3ea] hover:bg-white active:scale-95 md:hidden"
             aria-label="Toggle mobile menu"
             aria-expanded={isMobileMenuOpen}
@@ -85,13 +86,14 @@ export default function Navbar() {
             </span>
           </button>
 
+          {/* Account dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               type="button"
               onClick={() => {
-              setIsUserMenuOpen((currentValue) => !currentValue);
-              setIsMobileMenuOpen(false);
-            }}
+                setIsUserMenuOpen((v) => !v);
+                setIsMobileMenuOpen(false);
+              }}
               className="flex items-center gap-2 rounded-full border border-transparent px-2 py-1 transition-transform hover:border-[#dfe3ea] hover:bg-white active:scale-95"
               aria-haspopup="menu"
               aria-expanded={isUserMenuOpen}
@@ -106,13 +108,18 @@ export default function Navbar() {
             {isUserMenuOpen && (
               <div className="absolute right-0 mt-3 w-56 overflow-hidden rounded-2xl border border-[#e8ebf2] bg-white shadow-[0_20px_60px_rgba(19,27,44,0.12)]">
                 <div className="border-b border-[#eef1f6] px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8a8fa3]">User Menu</p>
-                  <p className="mt-1 text-sm font-semibold text-[#1f2233]">{user ? user.name : "Guest"}</p>
-                  <p className="text-xs text-[#767586]">{user ? user.email : "Please sign in for full access"}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8a8fa3]">
+                    {user ? "Akun Saya" : "User Menu"}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-[#1f2233]">
+                    {user ? user.name : "Guest"}
+                  </p>
+                  <p className="text-xs text-[#767586]">
+                    {user ? user.email : "Silakan login untuk akses penuh"}
+                  </p>
                 </div>
 
                 <div className="py-2 text-sm">
-
                   {!user ? (
                     <>
                       <Link
@@ -135,24 +142,14 @@ export default function Navbar() {
                   ) : (
                     <>
                       {user.role === "admin" && (
-                        <>
-                          <Link
-                            to="/admin/products"
-                            onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2 text-[#464554] transition-colors hover:bg-[#f6f7fc] hover:text-[#4648d4]"
-                          >
-                            <span className="material-symbols-outlined text-[20px]">inventory</span>
-                            Manage Products
-                          </Link>
-                          <Link
-                            to="/admin/products/create"
-                            onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2 text-[#464554] transition-colors hover:bg-[#f6f7fc] hover:text-[#4648d4]"
-                          >
-                            <span className="material-symbols-outlined text-[20px]">add_box</span>
-                            Create Product
-                          </Link>
-                        </>
+                        <Link
+                          to="/admin"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2 text-[#4648d4] font-semibold transition-colors hover:bg-[#f0f0ff]"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">dashboard</span>
+                          Admin Dashboard
+                        </Link>
                       )}
                       <button
                         type="button"
@@ -169,6 +166,7 @@ export default function Navbar() {
             )}
           </div>
 
+          {/* Cart icon */}
           <Link
             to="/cart"
             className="relative transition-transform active:scale-95"
@@ -183,32 +181,29 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
+
+      {/* ── Mobile menu ── */}
       {isMobileMenuOpen && (
-      <div className="absolute left-0 right-0 top-full flex flex-col border-b border-[#e8ebf2] bg-white px-6 py-4 shadow-xl lg:hidden">
-        <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#4648d4] border-b border-gray-50">
-          Home
-        </Link>
-        {(!user || user.role !== "admin") && (
-      <>
-        <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
-          Shop
-        </Link>
-        <Link to="/#tips" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
-          Care Tips
-        </Link>
-        <Link to="/#about" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4]">
-          About
-        </Link>
-        </>
-    )}
-          {/* Tambahan Menu Khusus Admin di Mobile */}
-          {user && user.role === "admin" && (
-            <Link to="/admin/products/create" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-bold text-[#4648d4]">
-              + Create Product
+        <div className="absolute left-0 right-0 top-full flex flex-col border-b border-[#e8ebf2] bg-white px-6 py-4 shadow-xl lg:hidden">
+          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#4648d4] border-b border-gray-50">
+            Home
+          </Link>
+          <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
+            Shop
+          </Link>
+          <Link to="/#tips" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4] border-b border-gray-50">
+            Care Tips
+          </Link>
+          <Link to="/#about" onClick={() => setIsMobileMenuOpen(false)} className="py-3 font-semibold text-[#464554] hover:text-[#4648d4]">
+            About
+          </Link>
+          {user?.role === "admin" && (
+            <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="mt-2 py-3 font-bold text-[#4648d4] border-t border-gray-100">
+              ⚙️ Admin Dashboard
             </Link>
           )}
-      </div>
-    )}
+        </div>
+      )}
     </nav>
   );
 }

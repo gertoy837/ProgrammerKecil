@@ -34,6 +34,9 @@ const {
   deleteCategory
 } = require("./categoryModel");
 
+const {
+  getAllOrders
+} = require("./orderModel");
 
 module.exports = {
   addReview,  
@@ -61,5 +64,6 @@ module.exports = {
   deleteItem,
   deleteItemForUser,
   clearCart,
-  checkoutCart
+  checkoutCart,
+  getAllOrders
 };

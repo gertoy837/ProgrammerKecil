@@ -13,3 +13,12 @@ exports.checkout = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await dataStore.getAllOrders();
+    res.status(200).json({ orders });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
