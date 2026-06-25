@@ -12,11 +12,17 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+console.log("Allowed Origins:", allowedOrigins);
+
 const corsOptions = {
   origin(origin, callback) {
+    console.log("Incoming Origin:", origin);
+
     if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+
+    console.log("Rejected Origin:", origin);
 
     return callback(new Error("Origin not allowed by CORS"));
   },
