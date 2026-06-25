@@ -14,6 +14,10 @@ export const getCartForUser = async (userId) => {
   return apiClient.get(endpoint);
 };
 
+export const checkoutCart = async () => {
+  return apiClient.post("/orders/checkout");
+};
+
 // Add JWT token to requests if available
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
