@@ -1,13 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
+import { checkoutCart } from "../utils/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function CheckoutPage() {
   const { user } = useAuth();
-  const { cart } = useCart();
+  const { cart, fetchCart } = useCart();
   const navigate = useNavigate();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutSuccess, setCheckoutSuccess] = useState(null);
+  const [checkoutError, setCheckoutError] = useState(null);
 
   const cartItems = cart?.items || [];
   const itemCount = cartItems.reduce((total, item) => total + Number(item.quantity || 0), 0);
@@ -21,6 +26,24 @@ export default function CheckoutPage() {
 
   const apiHost = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
   const formatPrice = (value) => currencyFormatter.format(Number(value || 0));
+
+  const handleCheckout = async () => {
+    if (isCheckingOut || cartItems.length === 0) return;
+
+    setIsCheckingOut(true);
+    setCheckoutError(null);
+    setCheckoutSuccess(null);
+
+    try {
+      const response = await checkoutCart();
+      setCheckoutSuccess(response.data.order);
+      await fetchCart();
+    } catch (error) {
+      setCheckoutError(error.response?.data?.message || "Checkout failed");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   if (!user) {
     return (
@@ -142,12 +165,26 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          {checkoutError ? (
+            <div className="mt-4 rounded-3xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              {checkoutError}
+            </div>
+          ) : null}
+
+          {checkoutSuccess ? (
+            <div className="mt-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+              Pesanan berhasil dibuat. Order ID: <strong>{checkoutSuccess.id}</strong>
+            </div>
+          ) : null}
+
           <button
             type="button"
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#191c1e] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-black"
+            onClick={handleCheckout}
+            disabled={isCheckingOut || cartItems.length === 0}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#191c1e] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:bg-slate-400"
           >
             <span className="material-symbols-outlined text-[18px]">payments</span>
-            Continue to Payment
+            {isCheckingOut ? "Processing…" : "Continue to Payment"}
           </button>
 
           <Link

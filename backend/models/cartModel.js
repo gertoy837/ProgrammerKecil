@@ -255,6 +255,120 @@ async function clearCart(userId) {
   }
 }
 
+async function checkoutCart(userId) {
+  await ensureDatabaseReady();
+  const numericUserId = Number(userId);
+
+  if (!Number.isInteger(numericUserId)) {
+    return { error: "Invalid user id", statusCode: 400 };
+  }
+
+  const pool = getPool();
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    const [cartRows] = await connection.query(
+      `SELECT id FROM carts WHERE userId = ? LIMIT 1 FOR UPDATE`,
+      [numericUserId]
+    );
+
+    if (cartRows.length === 0) {
+      await connection.rollback();
+      return { error: "Cart is empty", statusCode: 400 };
+    }
+
+    const cartId = cartRows[0].id;
+
+    const [items] = await connection.query(
+      `SELECT ci.productId, ci.quantity, p.price, p.stock
+       FROM cart_items ci
+       JOIN products p ON p.id = ci.productId
+       WHERE ci.cartId = ?
+       FOR UPDATE`,
+      [cartId]
+    );
+
+    if (items.length === 0) {
+      await connection.rollback();
+      return { error: "Cart is empty", statusCode: 400 };
+    }
+
+    const insufficientStock = items.find((item) => item.quantity > item.stock);
+
+    if (insufficientStock) {
+      await connection.rollback();
+      return {
+        error: `Insufficient stock for product ${insufficientStock.productId}`,
+        statusCode: 400,
+      };
+    }
+
+    const totalPrice = items.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+
+    const [orderResult] = await connection.query(
+      `INSERT INTO orders (userId, totalPrice) VALUES (?, ?)`,
+      [numericUserId, totalPrice]
+    );
+
+    const orderId = orderResult.insertId;
+
+    for (const item of items) {
+      const [stockUpdateResult] = await connection.query(
+        `UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?`,
+        [item.quantity, item.productId, item.quantity]
+      );
+
+      if (stockUpdateResult.affectedRows === 0) {
+        await connection.rollback();
+        return {
+          error: `Insufficient stock for product ${item.productId}`,
+          statusCode: 400,
+        };
+      }
+
+      await connection.query(
+        `INSERT INTO order_items (orderId, productId, quantity, priceAtPurchase)
+         VALUES (?, ?, ?, ?)`,
+        [orderId, item.productId, item.quantity, item.price]
+      );
+    }
+
+    await connection.query(`DELETE FROM cart_items WHERE cartId = ?`, [cartId]);
+
+    const [orderRows] = await connection.query(
+      `SELECT id, userId, totalPrice, createdAt FROM orders WHERE id = ? LIMIT 1`,
+      [orderId]
+    );
+
+    await connection.commit();
+
+    return {
+      order: {
+        id: orderRows[0].id,
+        userId: orderRows[0].userId,
+        totalPrice: orderRows[0].totalPrice,
+        createdAt: orderRows[0].createdAt,
+        items: items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          priceAtPurchase: item.price,
+          subtotal: item.price * item.quantity,
+        })),
+      },
+    };
+  } catch (error) {
+    await connection.rollback();
+    return { error: error.message, statusCode: 500 };
+  } finally {
+    connection.release();
+  }
+}
+
 module.exports = {
   addToCart,
   getCartForUser,
@@ -263,4 +377,5 @@ module.exports = {
   deleteItem, 
   deleteItemForUser,
   clearCart,
+  checkoutCart,
 };
