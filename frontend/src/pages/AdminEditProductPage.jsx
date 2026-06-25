@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import MainLayout from "../components/MainLayout";
+import AdminLayout from "../components/AdminLayout";
 import { useProduct } from "../contexts/ProductContext";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function AdminEditProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { fetchProductById, updateProduct, fetchCategories, categories } = useProduct();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -16,6 +16,8 @@ export default function AdminEditProductPage() {
   const [product, setProduct] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     categoryId: "",
@@ -25,14 +27,9 @@ export default function AdminEditProductPage() {
   });
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    if (user.role !== "admin") {
-      navigate("/");
-      return;
-    }
+    if (authLoading) return;
+    if (!user) { navigate("/login"); return; }
+    if (user.role !== "admin") { navigate("/"); return; }
 
     fetchCategories();
     const loadProduct = async () => {
@@ -52,10 +49,13 @@ export default function AdminEditProductPage() {
         }
       }
       setLoading(false);
+      setMounted(true);
     };
 
     loadProduct();
-  }, [id, user, navigate, fetchProductById, fetchCategories]);
+  }, [authLoading, id, user, navigate, fetchProductById, fetchCategories]);
+
+  if (authLoading) return null;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -69,11 +69,11 @@ export default function AdminEditProductPage() {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        setError("File harus berupa gambar");
+        setError("File must be an image");
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        setError("Ukuran gambar tidak boleh lebih dari 5MB");
+        setError("Image file size must be less than 5MB");
         return;
       }
       setImageFile(file);
@@ -98,7 +98,7 @@ export default function AdminEditProductPage() {
         !formData.stock ||
         !formData.description
       ) {
-        setError("Semua field harus diisi");
+        setError("Please fill out all fields.");
         setSaving(false);
         return;
       }
@@ -118,10 +118,10 @@ export default function AdminEditProductPage() {
         throw new Error(result.error);
       }
 
-      setSuccess("Produk berhasil diperbarui");
+      setSuccess("Product updated successfully!");
       setTimeout(() => navigate("/admin/products"), 1500);
     } catch (err) {
-      setError(err.message || "Terjadi kesalahan saat memperbarui produk");
+      setError(err.message || "An error occurred while updating the product.");
     } finally {
       setSaving(false);
     }
@@ -129,110 +129,151 @@ export default function AdminEditProductPage() {
 
   if (loading) {
     return (
-      <MainLayout>
-        <div className="flex min-h-[60vh] items-center justify-center">
-          <div className="text-slate-500">Memuat data produk...</div>
+      <AdminLayout>
+        <div className="py-24 flex flex-col items-center justify-center gap-3">
+          <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+          <p className="text-sm font-semibold text-on-surface-variant">Loading product details...</p>
         </div>
-      </MainLayout>
+      </AdminLayout>
     );
   }
 
   if (!product) {
     return (
-      <MainLayout>
-        <div className="flex min-h-[60vh] items-center justify-center">
-          <div className="text-slate-500">Produk tidak ditemukan.</div>
+      <AdminLayout>
+        <div className="py-24 text-center">
+          <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">error_outline</span>
+          <p className="text-sm font-semibold text-on-surface-variant">Product not found.</p>
         </div>
-      </MainLayout>
+      </AdminLayout>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold text-slate-900">Edit Produk</h1>
-          <p className="text-slate-500">Perbarui detail produk dan simpan perubahan.</p>
+    <AdminLayout>
+      <div className={`mx-auto transition-all duration-300 transform ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <p className="text-on-surface-variant font-semibold text-sm mb-1">Products</p>
+            <h3 className="text-2xl font-extrabold text-on-surface">Edit Product</h3>
+          </div>
+          <button
+            onClick={() => navigate("/admin/products")}
+            className="py-2.5 px-4 bg-surface-container-high text-on-surface-variant rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-sm"
+          >
+            <span className="material-symbols-outlined text-sm font-bold">arrow_back</span>
+            <span>Back</span>
+          </button>
         </div>
 
+        {/* Notifications */}
         {error && (
-          <div className="rounded-2xl bg-red-50 border border-red-200 p-4 text-red-700">
+          <div className="mb-6 p-4 rounded-xl text-sm font-semibold flex items-center gap-2 bg-red-50 text-red-700 border border-red-200">
+            <span className="material-symbols-outlined text-lg">error</span>
             {error}
           </div>
         )}
-
         {success && (
-          <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-emerald-700">
+          <div className="mb-6 p-4 rounded-xl text-sm font-semibold flex items-center gap-2 bg-green-50 text-green-700 border border-green-200">
+            <span className="material-symbols-outlined text-lg">check_circle</span>
             {success}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Nama Produk</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#4648d4] focus:ring-2 focus:ring-[#4648d4]/20"
-            />
-          </div>
+        {/* Form Card */}
+        <form onSubmit={handleSubmit} className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-6">
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Kategori</label>
-            <select
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleInputChange}
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#4648d4] focus:ring-2 focus:ring-[#4648d4]/20"
-            >
-              <option value="">Pilih kategori</option>
-              {categories?.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Product Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Harga (Rp)</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/80 mb-2">
+                Product Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/80 mb-2">
+                Category
+              </label>
+              <select
+                name="categoryId"
+                value={formData.categoryId}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              >
+                <option value="">Select category</option>
+                {categories?.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Price & Stock (Grid) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/80 mb-2">
+                Price (Rp)
+              </label>
               <input
                 type="number"
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#4648d4] focus:ring-2 focus:ring-[#4648d4]/20"
+                className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Stok</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/80 mb-2">
+                Stock Quantity
+              </label>
               <input
                 type="number"
                 name="stock"
                 value={formData.stock}
                 onChange={handleInputChange}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#4648d4] focus:ring-2 focus:ring-[#4648d4]/20"
+                className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </div>
 
+          {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Deskripsi</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/80 mb-2">
+              Description
+            </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleInputChange}
               rows="5"
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#4648d4] focus:ring-2 focus:ring-[#4648d4]/20"
+              className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
             />
           </div>
 
+          {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Gambar Produk</label>
-            <div className="rounded-3xl border border-dashed border-slate-300 p-5 text-center">
+            <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/80 mb-2">
+              Product Image
+            </label>
+
+            {imagePreview && (
+              <div className="relative rounded-2xl overflow-hidden border border-outline-variant/30 max-w-sm aspect-square bg-surface-container-low mb-4">
+                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+              </div>
+            )}
+
+            <div className="border-2 border-dashed border-outline-variant/30 bg-surface-container-low hover:border-primary/50 rounded-2xl p-6 text-center">
               <input
                 type="file"
                 accept="image/*"
@@ -240,36 +281,33 @@ export default function AdminEditProductPage() {
                 className="hidden"
                 id="product-image-edit"
               />
-              <label htmlFor="product-image-edit" className="cursor-pointer text-sm text-slate-500 hover:text-[#4648d4]">
-                Pilih gambar baru untuk mengganti gambar saat ini.
+              <label htmlFor="product-image-edit" className="cursor-pointer block">
+                <span className="material-symbols-outlined text-3xl text-on-surface-variant/50 mb-2 block">upload_file</span>
+                <p className="text-sm font-bold text-on-surface">Click to select new image</p>
+                <p className="text-xs text-on-surface-variant/70 mt-1">Leave empty to keep current image (Max 5MB)</p>
               </label>
             </div>
           </div>
 
-          {imagePreview && (
-            <div className="rounded-3xl border border-slate-200 overflow-hidden">
-              <img src={imagePreview} alt="Preview" className="w-full object-cover" />
-            </div>
-          )}
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+          {/* Actions */}
+          <div className="flex justify-end gap-4 pt-4 border-t border-outline-variant/10">
             <button
               type="submit"
               disabled={saving}
-              className="rounded-2xl bg-[#4648d4] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#3b3dbb] disabled:cursor-not-allowed disabled:opacity-60"
+              className="py-3 px-4 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
-              {saving ? "Menyimpan..." : "Simpan Perubahan"}
+              {saving ? "Saving Changes..." : "Save Changes"}
             </button>
             <button
               type="button"
               onClick={() => navigate("/admin/products")}
-              className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="py-3 px-4 bg-surface-container-high text-on-surface-variant rounded-xl font-bold text-sm hover:opacity-90 transition-opacity"
             >
-              Batal
+              Cancel
             </button>
           </div>
         </form>
       </div>
-    </MainLayout>
+    </AdminLayout>
   );
 }

@@ -31,8 +31,12 @@ export default function LoginPage() {
 
     setLoading(false);
 
-    // Redirect hanya kalau benar-benar berhasil
-    navigate("/");
+    // Redirect berdasarkan role
+    if (result.user?.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/");
+    }
   };
 
   return (

@@ -48,6 +48,46 @@ export function ProductProvider({ children }) {
     }
   }, []);
 
+  const createCategory = useCallback(async (formData) => {
+    try {
+      const response = await apiClient.post("/categories", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message || "Gagal membuat kategori",
+      };
+    }
+  }, []);
+
+  const updateCategory = useCallback(async (id, formData) => {
+    try {
+      const response = await apiClient.put(`/categories/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message || "Gagal mengupdate kategori",
+      };
+    }
+  }, []);
+
+  const deleteCategory = useCallback(async (id) => {
+    try {
+      await apiClient.delete(`/categories/${id}`);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message || "Gagal menghapus kategori",
+      };
+    }
+  }, []);
+
   const createProduct = useCallback(async (formData) => {
     try {
       const response = await apiClient.post("/products", formData, {
@@ -124,6 +164,9 @@ export function ProductProvider({ children }) {
         fetchAllProducts,
         fetchProductById,
         fetchCategories,
+        createCategory,
+        updateCategory,
+        deleteCategory,
         createProduct,
         updateProduct,
         deleteProduct,

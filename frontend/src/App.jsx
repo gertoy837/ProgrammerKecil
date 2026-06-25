@@ -14,6 +14,8 @@ import RegisterPage from "./pages/RegisterPage";
 import AdminCreateProductPage from "./pages/AdminCreateProductPage";
 import AdminProductListPage from "./pages/AdminProductListPage";
 import AdminEditProductPage from "./pages/AdminEditProductPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminCategoryPage from "./pages/AdminCategoryPage";
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/admin" element={<AdminDashboardPage />} />
+              <Route path="/admin/categories" element={<AdminCategoryPage />} />
               <Route path="/admin/products" element={<AdminProductListPage />} />
               <Route path="/admin/products/create" element={<AdminCreateProductPage />} />
               <Route path="/admin/products/:id/edit" element={<AdminEditProductPage />} />
