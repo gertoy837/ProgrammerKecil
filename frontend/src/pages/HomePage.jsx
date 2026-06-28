@@ -217,11 +217,11 @@ export default function HomePage() {
                       </ProductBadge>
                     </div>
                     <img
-                      alt={product.name}
-                      src={product.image}
-                      onClick={() => navigate(`/products/${product.id}`)}
-                      className="h-full w-full cursor-pointer object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+                        alt={product.name}
+                        src={`http://localhost:5000${product.image}`}
+                        onClick={() => navigate(`/products/${product.id}`)}
+                        className="h-full w-full cursor-pointer object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
                   </div>
                   <div className="px-6 pb-6 pt-2 text-left">
                     <div className="mb-2 flex items-center justify-between">
@@ -308,8 +308,11 @@ export default function HomePage() {
             {recommendations.map((item) => (
               <article key={item.id} className="min-w-80 snap-start rounded-4xl bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                 <div className="mb-4 overflow-hidden rounded-3xl">
-                  <img alt={item.name} src={item.image} className="h-full w-full object-cover" />
-                </div>
+                    <img 
+                      alt={item.name} 
+                      src={`http://localhost:5000${item.image}`} 
+                      className="h-full w-full object-cover" 
+                    />                </div>
                 <div className="px-2 text-left">
                   <div className="mb-1 flex items-center justify-between">
                     <h4 className="text-lg font-semibold text-[#12101a]">{item.name}</h4>
