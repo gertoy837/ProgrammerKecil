@@ -9,13 +9,20 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // Load auth data dari localStorage saat init
-  useEffect(() => {
+ useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
 
     if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      try {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        // Jika data user rusak, hapus sekalian agar tidak error
+        console.error("Gagal membaca data user dari storage");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
     }
 
     setLoading(false);

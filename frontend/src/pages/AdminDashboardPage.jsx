@@ -181,7 +181,7 @@ export default function AdminDashboardPage() {
                         <td className="px-8 py-5 text-on-surface-variant">{orderDate}</td>
                         <td className="px-8 py-5">
                           <span className="px-3 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full text-xs font-bold uppercase">
-                            Selesai
+                            Finished
                           </span>
                         </td>
                         <td className="px-8 py-5 font-bold">
