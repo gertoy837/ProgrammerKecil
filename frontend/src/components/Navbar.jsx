@@ -61,12 +61,12 @@ export default function Navbar() {
           <div className="hidden items-center gap-8 md:flex">
             {navLink("/", "Home", true)}
             {navLink("/products", "Shop")}
-            <Link to="/#tips" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
-              Care Tips
-            </Link>
-            <Link to="/#about" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
-              About
-            </Link>
+           <a href="/#care" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
+            Care Tips
+          </a>
+          <a href="/#about" className="font-semibold text-[#464554] transition-colors hover:text-[#4648d4]">
+            About
+          </a>
           </div>
         </div>
 
