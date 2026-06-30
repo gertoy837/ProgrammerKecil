@@ -105,7 +105,7 @@ export default function HomePage() {
       <header id="home" className="h-150 relative flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            alt="Ikan Cupang yang Menawan"
+            alt="Ikan Cupang BettaVerse"
             className="h-full w-full scale-105 object-cover object-center"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJoCDI3Hg3SDfZGWWSvRVeoy3goEHbG2SLGgJNeK5ZgXT_NpmvyCtIADyVblkSGrOGex26AEeT8dJDo1sHteVqaaOSCvMszoqHCRtHXF3m3m5M8xr9xI4vCjStBKjWLk2cCEA60VMxspCp2DqMdQrQOiAi12y79fMaZuKl4it3HT6HX6vBzEMTRHijk0-Ev5VNZIdlJ5yPsg5LWEtv89hiSNx4nUbUhdpsuU86ulivNmUKj5N-3OZ1epIH46QE5rV1jvNAGAYr6w"
           />

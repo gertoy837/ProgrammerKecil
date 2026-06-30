@@ -13,14 +13,14 @@ export default function ProductListPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // State Dinamis untuk Search, Filter, Sorting, dan Pagination
+  // State Dinamis untuk Pencarian, Filter, Pengurutan, dan Pagination
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Product");
+  const [selectedCategory, setSelectedCategory] = useState("Semua Produk");
   const [sortBy, setSortBy] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // State untuk Cart
+  // State untuk Keranjang
   const [addingToCart, setAddingToCart] = useState(null);
   const [notification, setNotification] = useState(null);
 
@@ -50,13 +50,13 @@ export default function ProductListPage() {
     if (result.success) {
       setNotification({
         type: "success",
-        message: `${productTitle} added to cart!`,
+        message: `${productTitle} berhasil ditambahkan ke keranjang!`,
       });
       setTimeout(() => setNotification(null), 3000);
     } else {
       setNotification({
         type: "error",
-        message: result.error || "Failed to add to cart",
+        message: result.error || "Gagal menambahkan ke keranjang",
       });
       setTimeout(() => setNotification(null), 3000);
     }
@@ -68,31 +68,31 @@ export default function ProductListPage() {
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-[#4648d4] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
           <p className="text-sm font-semibold text-slate-500 animate-pulse">
-            Loading BettaVerse Catalogue...
+            Memuat Katalog BettaVerse...
           </p>
         </div>
       </div>
     );
   }
 
-  // ==================== LOGIKA FILTER, SEARCH, & SORTING ====================
+  // ==================== LOGIKA FILTER, PENCARIAN, & PENGURUTAN ====================
   let filteredProducts = products.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (product.description &&
         product.description.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory =
-      selectedCategory === "All Product"
+      selectedCategory === "Semua Produk"
         ? true
         : product.category?.name === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   const rawCategories = products.map((p) => p.category?.name).filter(Boolean);
-  const uniqueCategories = ["All Product", ...new Set(rawCategories)];
+  const uniqueCategories = ["Semua Produk", ...new Set(rawCategories)];
 
   const getCategoryCount = (catName) => {
-    if (catName === "All Product") return products.length;
+    if (catName === "Semua Produk") return products.length;
     return products.filter((p) => p.category?.name === catName).length;
   };
 
@@ -112,7 +112,7 @@ export default function ProductListPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 antialiased flex flex-col justify-between font-sans relative">
-      {/* Toast Notification */}
+      {/* Notifikasi Toast */}
       {notification && (
         <div
           className={`fixed top-24 right-4 z-50 px-6 py-3 rounded-2xl shadow-xl font-bold flex items-center gap-2 animate-[slideIn_0.3s_ease-out] ${
@@ -133,10 +133,10 @@ export default function ProductListPage() {
 
       {/* Konten Utama */}
       <main className="max-w-7xl w-full mx-auto px-4 md:px-10 py-8 flex-1">
-        {/* BANNER HERO "DISCOVER LIVING JEWELS" LIGHT VERSION  */}
+        {/* BANNER HERO */}
         <section className="relative h-72 mb-12 rounded-3xl overflow-hidden flex flex-col items-center justify-center text-center shadow-md bg-slate-900">
           <img
-            alt="Premium Aquarium Background"
+            alt="Latar Belakang Akuarium Premium"
             className="absolute inset-0 w-full h-full object-cover brightness-[0.40] contrast-110"
             src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1600&auto=format&fit=crop"
           />
@@ -144,14 +144,13 @@ export default function ProductListPage() {
 
           <div className="relative z-20 px-4 max-w-3xl mx-auto">
             <h1 className="text-4xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">
-              Discover Living Jewels
+              Temukan Keindahan yang Sesungguhnya
             </h1>
             <p className="text-xs md:text-sm text-white/80 max-w-md mx-auto mb-6 leading-relaxed">
-              Curating the world's most vibrant and rare Betta varieties for
-              connoisseurs and enthusiasts alike.
+              Jelajahi ragam varietas cupang dengan warna paling memesona, sebuah mahakarya alam khusus untuk Anda yang menghargai keindahan.
             </p>
 
-            {/* BOX PENCARIAN BERSIH */}
+            {/* KOLOM PENCARIAN BERSIH */}
             <div className="flex items-center bg-white rounded-full p-1.5 shadow-lg max-w-md mx-auto border border-slate-200 focus-within:ring-2 focus-within:ring-[#4648d4]/20 transition-all">
               <input
                 type="text"
@@ -160,11 +159,11 @@ export default function ProductListPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                placeholder="Search by name, color, or rarity..."
+                placeholder="Cari berdasarkan nama, warna, atau kelangkaan..."
                 className="flex-1 bg-transparent border-none text-slate-700 placeholder:text-slate-400 font-semibold px-4 py-2 text-sm focus:outline-none focus:ring-0"
               />
               <button className="bg-[#4648d4] hover:bg-[#3b3dbb] text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all tracking-wider shadow-sm active:scale-95">
-                Search
+                Cari
               </button>
             </div>
           </div>
@@ -172,11 +171,11 @@ export default function ProductListPage() {
 
         {/* Layout Utama Kiri & Kanan */}
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* SIDEBAR MENU KATEGORI*/}
+          {/* SIDEBAR MENU KATEGORI */}
           <aside className="w-full lg:w-64 shrink-0">
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 sticky top-24">
               <h3 className="text-sm font-extrabold text-slate-900 tracking-wide mb-4">
-                Category
+                Kategori
               </h3>
               <div className="space-y-1">
                 {uniqueCategories.map((cat) => {
@@ -196,7 +195,7 @@ export default function ProductListPage() {
                     >
                       <div className="flex items-center gap-3">
                         <span className="material-symbols-outlined text-lg opacity-70">
-                          {cat === "All Product" ? "grid_view" : "water_drop"}
+                          {cat === "Semua Produk" ? "grid_view" : "water_drop"}
                         </span>
                         <span>{cat}</span>
                       </div>
@@ -216,25 +215,25 @@ export default function ProductListPage() {
 
               <div className="border-t border-slate-100 my-5"></div>
 
-              {/* Sorting di Bawah Kategori */}
+              {/* Pengurutan di Bawah Kategori */}
               <div>
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-                  Sort By Price
+                  Urutkan Harga
                 </h3>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 px-3 py-2.5 rounded-xl focus:outline-none focus:border-[#4648d4] cursor-pointer shadow-sm transition-all"
                 >
-                  <option value="default">Default / Newest</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
+                  <option value="default">Default / Terbaru</option>
+                  <option value="price-low">Harga: Rendah ke Tinggi</option>
+                  <option value="price-high">Harga: Tinggi ke Rendah</option>
                 </select>
               </div>
             </div>
           </aside>
 
-          {/* MAIN CATALOG AREA (CARD PUTIH MINIMALIS) */}
+          {/* AREA KATALOG UTAMA */}
           <div className="flex-1">
             {currentItems.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
@@ -243,8 +242,8 @@ export default function ProductListPage() {
                 </span>
                 <p className="text-slate-500 font-semibold">
                   {searchQuery
-                    ? `No results found for "${searchQuery}"`
-                    : `No betta fish available.`}
+                    ? `Tidak ada hasil yang ditemukan untuk "${searchQuery}"`
+                    : `Ikan cupang tidak tersedia saat ini.`}
                 </p>
               </div>
             ) : (
@@ -265,7 +264,7 @@ export default function ProductListPage() {
                         className="bg-white rounded-3xl p-4 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col justify-between"
                       >
                         <div>
-                          {/* Image Wrapper */}
+                          {/* Pembungkus Gambar */}
                           <Link
                             to={`/products/${product.id}`}
                           >
@@ -286,17 +285,17 @@ export default function ProductListPage() {
                               )}
                               {product.stock > 0 ? (
                                 <span className="absolute top-4 left-4 bg-[#4648d4] backdrop-blur-sm text-white text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
-                                  Stock: {product.stock}
+                                  Stok: {product.stock}
                                 </span>
                               ) : (
                                 <span className="absolute top-4 left-4 bg-slate-300 text-slate-600 text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full">
-                                  Sold Out
+                                  Habis Terjual
                                 </span>
                               )}
                             </div>
                           </Link>
 
-                          {/* Detail Info */}
+                          {/* Info Detail */}
                           <div className="px-1">
                             <h3 className="text-base font-bold text-slate-850 mb-1 group-hover:text-[#4648d4] transition-colors capitalize tracking-wide">
                               <Link
@@ -308,16 +307,16 @@ export default function ProductListPage() {
                             </h3>
                             <p className="text-xs text-slate-400 mb-4 line-clamp-2 leading-relaxed">
                               {product.description ||
-                                "Premium quality curated specimen."}
+                                "Koleksi cupang premium pilihan."}
                             </p>
                           </div>
                         </div>
 
-                        {/* Price & Action Button */}
+                        {/* Harga & Tombol Aksi */}
                         <div className="px-1 mt-auto">
                           <div className="flex items-center justify-between mb-4 pt-3 border-t border-slate-50">
                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                              Price
+                              Harga
                             </span>
                             <span className="text-base font-extrabold text-[#4648d4]">
                               Rp {(product.price || 0).toLocaleString("id-ID")}
@@ -336,8 +335,8 @@ export default function ProductListPage() {
                               shopping_cart
                             </span>
                             {addingToCart === product.id
-                              ? "Adding..."
-                              : "Add to Cart"}
+                              ? "Menambahkan..."
+                              : "Keranjang"}
                           </button>
                         </div>
                       </div>
@@ -345,7 +344,7 @@ export default function ProductListPage() {
                   })}
                 </div>
 
-                {/* PAGINATION CONTROLS */}
+                {/* KONTROL PAGINATION */}
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-3 mt-12">
                     <button
@@ -358,14 +357,14 @@ export default function ProductListPage() {
                       <span className="material-symbols-outlined text-sm">
                         chevron_left
                       </span>{" "}
-                      Prev
+                      Sebelumnya
                     </button>
                     <span className="text-xs font-semibold text-slate-400">
-                      Page{" "}
+                      Halaman{" "}
                       <span className="text-slate-800 font-bold">
                         {currentPage}
                       </span>{" "}
-                      of {totalPages}
+                      dari {totalPages}
                     </span>
                     <button
                       onClick={() =>
@@ -374,7 +373,7 @@ export default function ProductListPage() {
                       disabled={currentPage === totalPages}
                       className="flex items-center gap-1 px-4 py-2 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
                     >
-                      Next{" "}
+                      Selanjutnya{" "}
                       <span className="material-symbols-outlined text-sm">
                         chevron_right
                       </span>
