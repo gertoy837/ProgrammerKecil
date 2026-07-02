@@ -329,7 +329,7 @@ export default function HomePage() {
                 <div className="mb-4 aspect-square w-full overflow-hidden rounded-3xl bg-[#f2f4f6]">
                   <img
                     alt={item.name}
-                    src={`http://localhost:5000${item.image}`}
+                    src={`${apiHost}${item.image}`}
                     className="h-full w-full object-cover object-center"
                   />
                 </div>
