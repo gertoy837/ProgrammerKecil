@@ -280,7 +280,7 @@ export default function HomePage() {
                     </div>
                   </div>
                 </article>
-              ))}
+          )       })}
             </div>
 
             <div className="mt-16 flex items-center justify-center gap-2">
@@ -359,7 +359,7 @@ export default function HomePage() {
                   </button>
                 </div>
               </article>
-            ))}
+            )})}
           </div>
         </div>
       </section>
