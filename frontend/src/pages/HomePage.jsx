@@ -217,24 +217,33 @@ export default function HomePage() {
 
           <div className="lg:col-span-9">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {currentProducts.map((product) => (
-                <article
-                  key={product.id}
-                  className="group overflow-hidden rounded-4xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)]"
-                >
-                  <div className="relative m-3 aspect-4/5 overflow-hidden rounded-3xl bg-[#f2f4f6]">
-                    <div className="absolute right-4 top-4 z-10">
-                      <ProductBadge className={product.category?.name === "Rare" ? "bg-[#6b38d4] text-white" : "bg-white/90 text-[#191c1e]"}>
-                        {product.category?.name === "Rare" ? "Langka" : (product.category?.name || "")}
-                      </ProductBadge>
+              {currentProducts.map((product) => {
+                const productImageUrl = product.image ? `${apiHost}${product.image}` : null;
+
+                return (
+                  <article
+                    key={product.id}
+                    className="group overflow-hidden rounded-4xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0,0.04)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)]"
+                  >
+                    <div className="relative m-3 aspect-4/5 overflow-hidden rounded-3xl bg-[#f2f4f6]">
+                      <div className="absolute right-4 top-4 z-10">
+                        <ProductBadge className={product.category?.name === "Rare" ? "bg-[#6b38d4] text-white" : "bg-white/90 text-[#191c1e]"}>
+                          {product.category?.name === "Rare" ? "Langka" : (product.category?.name || "")}
+                        </ProductBadge>
+                      </div>
+                      {productImageUrl ? (
+                        <img
+                          alt={product.name}
+                          src={productImageUrl}
+                          onClick={() => navigate(`/products/${product.id}`)}
+                          className="h-full w-full cursor-pointer object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-sm uppercase text-slate-400">
+                          Gambar tidak tersedia
+                        </div>
+                      )}
                     </div>
-                    <img
-                      alt={product.name}
-                      src={`${apiHost}${product.image}`}
-                      onClick={() => navigate(`/products/${product.id}`)}
-                      className="h-full w-full cursor-pointer object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  </div>
                   <div className="px-6 pb-6 pt-2 text-left">
                     <div className="mb-2 flex items-center justify-between">
                       <h4
@@ -324,16 +333,25 @@ export default function HomePage() {
             </div>
           </div>
           <div className="flex gap-6 overflow-x-auto pb-8">
-            {recommendations.map((item) => (
-              <article key={item.id} className="flex w-80 shrink-0 snap-start flex-col rounded-4xl bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
-                <div className="mb-4 aspect-square w-full overflow-hidden rounded-3xl bg-[#f2f4f6]">
-                  <img
-                    alt={item.name}
-                    src={`http://localhost:5000${item.image}`}
-                    className="h-full w-full object-cover object-center"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col px-2 text-left">
+            {recommendations.map((item) => {
+              const recommendationImageUrl = item.image ? `${apiHost}${item.image}` : null;
+
+              return (
+                <article key={item.id} className="flex w-80 shrink-0 snap-start flex-col rounded-4xl bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+                  <div className="mb-4 aspect-square w-full overflow-hidden rounded-3xl bg-[#f2f4f6]">
+                    {recommendationImageUrl ? (
+                      <img
+                        alt={item.name}
+                        src={recommendationImageUrl}
+                        className="h-full w-full object-cover object-center"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-sm uppercase text-slate-400">
+                        Gambar tidak tersedia
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col px-2 text-left">
                   <h4 className="truncate text-lg font-semibold text-[#12101a]">{item.name}</h4>
                   <span className="font-bold text-[#4648d4]">Rp {(item.price || 0).toLocaleString("id-ID")}</span>
                   <button onClick={() => handleAddToCart(item.id, item.name)} className="mt-auto w-full rounded-2xl bg-[#2d3133] py-3 text-sm font-semibold text-white">
