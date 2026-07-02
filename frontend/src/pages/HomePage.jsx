@@ -36,6 +36,10 @@ export default function HomePage() {
     fetchAllProducts();
   }, [fetchAllProducts]);
 
+  const apiHost = (
+    import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+  ).replace(/\/api\/?$/, "");
+
   // === PERUBAHAN: Logika memotong data produk ===
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -226,7 +230,7 @@ export default function HomePage() {
                     </div>
                     <img
                       alt={product.name}
-                      src={`http://localhost:5000${product.image}`}
+                      src={`${apiHost}${product.image}`}
                       onClick={() => navigate(`/products/${product.id}`)}
                       className="h-full w-full cursor-pointer object-cover transition-transform duration-700 group-hover:scale-110"
                     />
